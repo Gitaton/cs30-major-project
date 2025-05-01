@@ -1,15 +1,24 @@
 # CS30 Major Project
 
 ## Description
-Tell me what you're going to build...
-Where's my water - With 2D Water Physics
+Tell me what you're going to build...  
+The popular mobile game: Where's my water 
 
 ## Needs To Have List
-- Thing 1
-- Thing 2
-- Thing 3
-- etc.
-
-## Nice To Have List
+- Main Menu
+- 2D Water/Fluid realtime simulation
+- A minimum of 3 Unique Levels
+- Images for character and visuals
 - Music
 - Sound Effects
+- Game Over, Retry, and Continue Screen
+- Destructable environment
+- Goal
+
+## Nice To Have List
+- Unique new game mechanic unrelated to Where's my water
+- More levels
+- Stars/Collectables
+- Animated Characters
+- Small plot or Storyline
+- Pause Menu
