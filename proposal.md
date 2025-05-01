@@ -7,8 +7,6 @@ The popular mobile game: Where's my water
 ## Needs To Have List
 - Main Menu
 - 2D Water/Fluid realtime simulation
-- A minimum of 3 Unique Levels
-- Images for character and visuals
 - Music
 - Sound Effects
 - Game Over, Retry, and Continue Screen
@@ -22,3 +20,5 @@ The popular mobile game: Where's my water
 - Animated Characters
 - Small plot or Storyline
 - Pause Menu
+- A minimum of 3 Unique Levels
+- Images for character and visuals
