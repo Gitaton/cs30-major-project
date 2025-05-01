@@ -2,6 +2,7 @@
 
 ## Description
 Tell me what you're going to build...
+Where's my water - With 2D Water Physics
 
 ## Needs To Have List
 - Thing 1
@@ -10,6 +11,5 @@ Tell me what you're going to build...
 - etc.
 
 ## Nice To Have List
-- Other thing
-- Yet one more thing
-- etc.
+- Music
+- Sound Effects
