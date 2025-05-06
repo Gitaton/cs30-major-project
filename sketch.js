@@ -19,15 +19,62 @@
 let grid;
 let cellSize;
 
+let globalCols;
+let globalRows;
+
 function setup() {
   createCanvas(windowWidth, windowHeight);
+
+  //noStroke();
+
+  cellSize = 100;
+
+  globalCols = ceil(width/cellSize);
+  globalRows = ceil(height/cellSize);
+
+  grid = generateGrid(globalCols, globalRows);
 }
 
 function draw() {
   background(220);
-  circle(mouseX, mouseY, 50);
+
+  displayGrid();
+  collision();
+
+  fill("red");
+  circle(mouseX, mouseY, 100);
 }
 
-function generateGrid() {
+function generateGrid(cols, rows) {
+  let newGrid = [];
+  for (let y = 0; y < rows; y++) {
+    newGrid.push([]);
+    for (let x = 0; x < cols; x++) {
+      newGrid[y].push(0);
+    }
+  }
+  return newGrid;
+}
 
+function displayGrid() {
+  for (let y = 0; y < globalRows; y++) {
+    for (let x = 0; x < globalCols; x++) {
+      if (grid[y][x] === 0) {
+        fill("blue");
+      }
+      rect(x * cellSize, y * cellSize, cellSize, cellSize);
+    }
+  }
+}
+
+// Check if mouse touching
+function collision() {
+  for (let y = 0; y < globalRows; y++) {
+    for (let x = 0; x < globalCols; x++) {
+      if (dist(x * cellSize, y * cellSize, mouseX, mouseY) < 50) {
+        console.log("COLLIDED!!");
+        grid[y][x] = 1;
+      }
+    }
+  }
 }
