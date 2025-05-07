@@ -22,6 +22,8 @@ let cellSize;
 let globalCols;
 let globalRows;
 
+let hit;
+
 function setup() {
   createCanvas(windowWidth, windowHeight);
 
@@ -62,6 +64,9 @@ function displayGrid() {
       if (grid[y][x] === 0) {
         fill("blue");
       }
+      if (grid[y][x] === 1) {
+        fill("red");
+      }
       rect(x * cellSize, y * cellSize, cellSize, cellSize);
     }
   }
@@ -71,10 +76,8 @@ function displayGrid() {
 function collision() {
   for (let y = 0; y < globalRows; y++) {
     for (let x = 0; x < globalCols; x++) {
-      if (dist(x * cellSize, y * cellSize, mouseX, mouseY) < 50) {
-        console.log("COLLIDED!!");
-        grid[y][x] = 1;
-      }
+      hit = collideRectCircle(x * cellSize, y * cellSize, cellSize, cellSize, mouseX, mouseY, 100);
+      console.log(hit);
     }
   }
 }
