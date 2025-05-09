@@ -23,17 +23,24 @@ let cellSize;
 let globalCols;
 let globalRows;
 
-let hit;
+let engine;
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
 
+  // MatterJS
+  engine = Runner.create();
+  Runner.run(engine);
+
   //noStroke();
 
-  cellSize = 100;
+  cellSize = 50;
 
   globalCols = ceil(width/cellSize);
   globalRows = ceil(height/cellSize);
+
+  // Set Noise Seed
+  noiseSeed(8);
 
   grid = generateGrid(globalCols, globalRows);
 }
@@ -43,9 +50,6 @@ function draw() {
 
   displayGrid();
   collision();
-
-  fill("red");
-  circle(mouseX, mouseY, 100);
 }
 
 function generateGrid(cols, rows) {
@@ -53,7 +57,7 @@ function generateGrid(cols, rows) {
   for (let y = 0; y < rows; y++) {
     newGrid.push([]);
     for (let x = 0; x < cols; x++) {
-      newGrid[y].push(0);
+      newGrid[y].push(round(noise(x * 0.2, y * 0.2)));
     }
   }
   return newGrid;
@@ -63,11 +67,12 @@ function displayGrid() {
   for (let y = 0; y < globalRows; y++) {
     for (let x = 0; x < globalCols; x++) {
       if (grid[y][x] === 0) {
-        fill("blue");
+        fill("white");
       }
       if (grid[y][x] === 1) {
-        fill("red");
+        fill("black");
       }
+      //fill(grid[y][x]);
       rect(x * cellSize, y * cellSize, cellSize, cellSize);
     }
   }
@@ -75,10 +80,5 @@ function displayGrid() {
 
 // Check if mouse touching
 function collision() {
-  for (let y = 0; y < globalRows; y++) {
-    for (let x = 0; x < globalCols; x++) {
-      hit = collideRectCircle(x * cellSize, y * cellSize, cellSize, cellSize, mouseX, mouseY, 100);
-      console.log(hit);
-    }
-  }
+
 }
