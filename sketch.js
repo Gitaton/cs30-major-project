@@ -23,14 +23,24 @@ let cellSize;
 let globalCols;
 let globalRows;
 
+// module aliases
+let Engine = Matter.Engine,
+  World = Matter.World,
+  Bodies = Matter.Bodies,
+  Composite = Matter.Composite;
+
 let engine;
+let world;
+let boxes = [];
+let ground;
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
-
+  
   // MatterJS
-  engine = Runner.create();
-  Runner.run(engine);
+  engine = Engine.create();
+  world = engine.world;
+  Engine.run(engine);
 
   //noStroke();
 
