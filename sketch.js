@@ -24,22 +24,23 @@ let globalCols;
 let globalRows;
 
 // module aliases
-let Engine = Matter.Engine,
-  World = Matter.World,
-  Bodies = Matter.Bodies,
-  Composite = Matter.Composite;
+let Engine = Matter.Engine;
+let World = Matter.World;
+let Bodies = Matter.Bodies;
+let Composite = Matter.Composite;
 
 let engine;
-let world;
-let boxes = [];
-let ground;
+// let world;
+// let boxes = [];
+let circles = [];
+// let ground;
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
   
   // MatterJS
   engine = Engine.create();
-  world = engine.world;
+  // world = engine.world;
   Engine.run(engine);
 
   //noStroke();
@@ -58,8 +59,23 @@ function setup() {
 function draw() {
   background(220);
 
-  displayGrid();
-  collision();
+  if (mouseIsPressed) {
+    let newCircle = {
+      radius: 5,
+      body: Bodies.circle(mouseX, mouseY, 5)
+    };
+
+    circles.push(newCircle);
+    World.add(engine.world, newCircle.body);
+  }
+
+  for (let circ of circles) {
+    let pos = circ.body.position;
+    ellipse(pos.x, pos.y, circ.radius);
+  }
+
+  //displayGrid();
+  //collision();
 }
 
 function generateGrid(cols, rows) {
