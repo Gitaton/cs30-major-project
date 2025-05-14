@@ -27,21 +27,18 @@ let globalRows;
 let Engine = Matter.Engine;
 let World = Matter.World;
 let Bodies = Matter.Bodies;
-let Composite = Matter.Composite;
 
 let engine;
-// let world;
-// let boxes = [];
+let world;
 let circles = [];
-// let ground;
+let ground;
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
   
   // MatterJS
   engine = Engine.create();
-  // world = engine.world;
-  Engine.run(engine);
+  world = engine.world;
 
   //noStroke();
 
@@ -58,24 +55,28 @@ function setup() {
 
 function draw() {
   background(220);
-
+  displayGrid();
+  collision();
+  
+  Engine.update(engine);
   if (mouseIsPressed) {
+    // Create circle object
     let newCircle = {
       radius: 5,
       body: Bodies.circle(mouseX, mouseY, 5)
     };
 
+    // Add circle to circle array & and to MatterJS world
     circles.push(newCircle);
     World.add(engine.world, newCircle.body);
   }
 
-  for (let circ of circles) {
-    let pos = circ.body.position;
-    ellipse(pos.x, pos.y, circ.radius);
+  // Draw circles
+  for (let circle of circles) {
+    let position = circle.body.position;
+    
+    ellipse(position.x, position.y, circle.radius);
   }
-
-  //displayGrid();
-  //collision();
 }
 
 function generateGrid(cols, rows) {
@@ -99,7 +100,13 @@ function displayGrid() {
         fill("black");
       }
       //fill(grid[y][x]);
-      rect(x * cellSize, y * cellSize, cellSize, cellSize);
+      //rect(x * cellSize, y * cellSize, cellSize, cellSize);
+      let newGround = {
+        isStatic: true,
+        body: Bodies.rectangle(x * cellSize, y * cellSize, cellSize, cellSize)
+      };
+
+
     }
   }
 }
