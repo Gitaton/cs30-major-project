@@ -32,6 +32,7 @@ let engine;
 let world;
 let circles = [];
 let ground;
+let groundCells = [];
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -77,6 +78,12 @@ function draw() {
     
     ellipse(position.x, position.y, circle.radius);
   }
+
+  // Draw Ground
+  for (let cell of groundCells) {
+    let secondPosition = cell.body.position;
+    rect(secondPosition.x, secondPosition.y, cellSize, cellSize);
+  }
 }
 
 function generateGrid(cols, rows) {
@@ -98,15 +105,14 @@ function displayGrid() {
       }
       if (grid[y][x] === 1) {
         fill("black");
+        let newGround = {
+          body: Bodies.rectangle(x * cellSize, y * cellSize, cellSize, cellSize, { isStatic: true })
+        };
+        groundCells.push(newGround);
+        World.add(engine.world, newGround.body);
       }
       //fill(grid[y][x]);
       //rect(x * cellSize, y * cellSize, cellSize, cellSize);
-      let newGround = {
-        isStatic: true,
-        body: Bodies.rectangle(x * cellSize, y * cellSize, cellSize, cellSize)
-      };
-
-
     }
   }
 }
