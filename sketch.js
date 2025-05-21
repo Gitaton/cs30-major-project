@@ -34,6 +34,13 @@ let circles = [];
 let ground;
 let groundCells = [];
 
+class groundPhysics {
+  constructor(cellSize) {
+    this.cellSize = cellSize;
+
+  }
+}
+
 function setup() {
   createCanvas(windowWidth, windowHeight);
   
@@ -43,6 +50,8 @@ function setup() {
 
   //noStroke();
 
+  rectMode(CENTER);
+
   cellSize = 50;
 
   globalCols = ceil(width/cellSize);
@@ -51,15 +60,51 @@ function setup() {
   // Set Noise Seed
   noiseSeed(8);
 
-  grid = generateGrid(globalCols, globalRows);
+  grid = generateGridNoise(globalCols, globalRows);
+  generateGrid();
 }
 
 function draw() {
   background(220);
+  matterEngine();
+  water();
   displayGrid();
-  collision();
-  
+}
+
+function generateGridNoise(cols, rows) {
+  let newGrid = [];
+  for (let y = 0; y < rows; y++) {
+    newGrid.push([]);
+    for (let x = 0; x < cols; x++) {
+      newGrid[y].push(round(noise(x * 0.2, y * 0.2)));
+    }
+  }
+  return newGrid;
+}
+
+function generateGrid() {
+  for (let y = 0; y < globalRows; y++) {
+    for (let x = 0; x < globalCols; x++) {
+      if (grid[y][x] === 0) {
+        fill("white");
+      }
+      if (grid[y][x] === 1) {
+        let newGround = {
+          body: Bodies.rectangle(x * cellSize, y * cellSize, cellSize, cellSize, { isStatic: true })
+        };
+        groundCells.push(newGround);
+        World.add(engine.world, newGround.body);
+      }
+    }
+  }
+}
+
+// Check if mouse touching
+function matterEngine() {
   Engine.update(engine);
+}
+
+function water() {
   if (mouseIsPressed) {
     // Create circle object
     let newCircle = {
@@ -78,46 +123,12 @@ function draw() {
     
     ellipse(position.x, position.y, circle.radius);
   }
+}
 
+function displayGrid() {
   // Draw Ground
   for (let cell of groundCells) {
     let secondPosition = cell.body.position;
     rect(secondPosition.x, secondPosition.y, cellSize, cellSize);
   }
-}
-
-function generateGrid(cols, rows) {
-  let newGrid = [];
-  for (let y = 0; y < rows; y++) {
-    newGrid.push([]);
-    for (let x = 0; x < cols; x++) {
-      newGrid[y].push(round(noise(x * 0.2, y * 0.2)));
-    }
-  }
-  return newGrid;
-}
-
-function displayGrid() {
-  for (let y = 0; y < globalRows; y++) {
-    for (let x = 0; x < globalCols; x++) {
-      if (grid[y][x] === 0) {
-        fill("white");
-      }
-      if (grid[y][x] === 1) {
-        fill("black");
-        let newGround = {
-          body: Bodies.rectangle(x * cellSize, y * cellSize, cellSize, cellSize, { isStatic: true })
-        };
-        groundCells.push(newGround);
-        World.add(engine.world, newGround.body);
-      }
-      //fill(grid[y][x]);
-      //rect(x * cellSize, y * cellSize, cellSize, cellSize);
-    }
-  }
-}
-
-// Check if mouse touching
-function collision() {
-
 }
