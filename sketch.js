@@ -7,9 +7,10 @@
 
 //TODO
 // - FOR TERRAIN DESTRUCTION:
-// - - Create a grid with a relatively large cell size
+// - - Create a grid with a relatively large cell size | DONE
 // - - When the destruction occurs, divide the cells into smaller cells (add resolution) to the now destroyed cells
 // - - MAYBE ALSO ADD MARCHING SQUARES FOR SMOOTH TRANSITIONS
+// - - https://github.com/n3r4zzurr0/canvas-liquid-effect
 // - FOR FLUID DYNAMICS:
 // - - 
 // ADD MATTER.JS FOR COLLISION PHYSICS
@@ -58,7 +59,7 @@ function setup() {
   globalRows = ceil(height/cellSize);
 
   // Set Noise Seed
-  noiseSeed(8);
+  noiseSeed(15);
 
   grid = generateGridNoise(globalCols, globalRows);
   generateGrid();
@@ -69,6 +70,8 @@ function draw() {
   matterEngine();
   water();
   displayGrid();
+  filter(BLUR, 5);
+  //filter(POSTERIZE, 4);
 }
 
 function generateGridNoise(cols, rows) {
@@ -83,6 +86,7 @@ function generateGridNoise(cols, rows) {
 }
 
 function generateGrid() {
+  filter(GRAY);
   for (let y = 0; y < globalRows; y++) {
     for (let x = 0; x < globalCols; x++) {
       if (grid[y][x] === 0) {
@@ -121,7 +125,7 @@ function water() {
   for (let circle of circles) {
     let position = circle.body.position;
     
-    ellipse(position.x, position.y, circle.radius);
+    ellipse(position.x, position.y, circle.radius * 4);
   }
 }
 
