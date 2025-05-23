@@ -70,7 +70,7 @@ function draw() {
   matterEngine();
   water();
   displayGrid();
-  filter(BLUR, 5);
+  
   //filter(POSTERIZE, 4);
 }
 
@@ -90,7 +90,7 @@ function generateGrid() {
   for (let y = 0; y < globalRows; y++) {
     for (let x = 0; x < globalCols; x++) {
       if (grid[y][x] === 0) {
-        fill("white");
+        // DO NOTHING
       }
       if (grid[y][x] === 1) {
         let newGround = {
@@ -109,6 +109,10 @@ function matterEngine() {
 }
 
 function water() {
+  // Water Styling
+  fill("blue");
+  noStroke();
+
   if (mouseIsPressed) {
     // Create circle object
     let newCircle = {
@@ -123,15 +127,24 @@ function water() {
 
   // Draw circles
   for (let circle of circles) {
+    // Establishes the friction of each ball
+    circle.body.friction = 0;
+
+    // Draws a circle at the position of the circle collider
     let position = circle.body.position;
-    
     ellipse(position.x, position.y, circle.radius * 4);
   }
+
+  // Water blur filter
+  //filter(BLUR, 5); 
+  //filter(THRESHOLD);
 }
 
 function displayGrid() {
   // Draw Ground
+  stroke("black");
   for (let cell of groundCells) {
+    fill("white");
     let secondPosition = cell.body.position;
     rect(secondPosition.x, secondPosition.y, cellSize, cellSize);
   }
