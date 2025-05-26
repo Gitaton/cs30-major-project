@@ -13,7 +13,6 @@
 // - - https://github.com/n3r4zzurr0/canvas-liquid-effect
 // - FOR FLUID DYNAMICS:
 // - - 
-// ADD MATTER.JS FOR COLLISION PHYSICS
 
 
 // https://www.reddit.com/r/askscience/comments/gfpow/how_accurately_can_we_model_fluid_mechanics/
@@ -24,7 +23,7 @@ let cellSize;
 let globalCols;
 let globalRows;
 
-// module aliases
+// Module Aliases
 let Engine = Matter.Engine;
 let World = Matter.World;
 let Bodies = Matter.Bodies;
@@ -35,15 +34,15 @@ let circles = [];
 let ground;
 let groundCells = [];
 
-class groundPhysics {
-  constructor(cellSize) {
-    this.cellSize = cellSize;
+// class groundPhysics {
+//   constructor(cellSize) {
+//     this.cellSize = cellSize;
 
-  }
-}
+//   }
+// }
 
-function setup() {
-  createCanvas(windowWidth, windowHeight);
+function setup() { // Setup function (Happens once before draw loop)
+  createCanvas(windowWidth, windowHeight, P2D);
   
   // MatterJS
   engine = Engine.create();
@@ -65,16 +64,14 @@ function setup() {
   generateGrid();
 }
 
-function draw() {
+function draw() { // Draw loop (updates every frame)
   background(220);
   matterEngine();
   water();
   displayGrid();
-  
-  //filter(POSTERIZE, 4);
 }
 
-function generateGridNoise(cols, rows) {
+function generateGridNoise(cols, rows) { // Generates the noise pattern responsible for creating the grid, then creates the grid pattern
   let newGrid = [];
   for (let y = 0; y < rows; y++) {
     newGrid.push([]);
@@ -85,7 +82,7 @@ function generateGridNoise(cols, rows) {
   return newGrid;
 }
 
-function generateGrid() {
+function generateGrid() { // Generates the grid collidors
   filter(GRAY);
   for (let y = 0; y < globalRows; y++) {
     for (let x = 0; x < globalCols; x++) {
@@ -103,12 +100,21 @@ function generateGrid() {
   }
 }
 
-// Check if mouse touching
-function matterEngine() {
+function displayGrid() { // Renders the grid visually
+  // Draw Ground
+  stroke("black");
+  for (let cell of groundCells) {
+    fill("white");
+    let secondPosition = cell.body.position;
+    rect(secondPosition.x, secondPosition.y, cellSize, cellSize);
+  }
+}
+
+function matterEngine() { // Enables physics
   Engine.update(engine);
 }
 
-function water() {
+function water() { // Creates water
   // Water Styling
   fill("blue");
   noStroke();
@@ -136,16 +142,5 @@ function water() {
   }
 
   // Water blur filter
-  //filter(BLUR, 5); 
-  //filter(THRESHOLD);
-}
-
-function displayGrid() {
-  // Draw Ground
-  stroke("black");
-  for (let cell of groundCells) {
-    fill("white");
-    let secondPosition = cell.body.position;
-    rect(secondPosition.x, secondPosition.y, cellSize, cellSize);
-  }
+  filter(BLUR, 3); 
 }
