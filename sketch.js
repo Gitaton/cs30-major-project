@@ -110,16 +110,23 @@ function displayGrid() { // Renders the grid visually
   }
 }
 
+function mousePressed() {
+  grid[Math.floor(globalRows/mouseY)][Math.floor(globalCols/mouseX)] = 0;
+  generateGrid();
+  // WIP 
+  // I NEED IT TO DELETE THE PREVIOUS GRID COLLIDORS THEN MAKE A NEW ONE
+}
+
 function matterEngine() { // Enables physics
   Engine.update(engine);
 }
 
 function water() { // Creates water
   // Water Styling
-  fill("blue");
+  fill("green");
   noStroke();
 
-  if (mouseIsPressed) {
+  if (keyIsPressed && keyCode === 32) { // If spacebar pressed
     // Create circle object
     let newCircle = {
       radius: 5,

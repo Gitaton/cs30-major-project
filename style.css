@@ -5,5 +5,5 @@ html, body {
 
 canvas {
   display: block;
-  filter: contrast(10);
+  filter: contrast(10) invert();
 }
