@@ -70,15 +70,12 @@ function draw() { // Draw loop (updates every frame)
   water();
   displayGrid();
 
-  // DISPLAY CIRCLE AT THE BOUNDS OF A CELL FOR TESTING
-  fill("yellow");
-  circle(1175, 25, 10);
-  circle(1125, -25, 60);
-
-  if (mouseIsPressed && mouseButton === LEFT) { // Deletes all squares for testing purposes
+  if (mouseIsPressed && mouseButton === LEFT) { // Deletes cells when mouse pressed
     for (let cell of groundCells) {
-      groundCells.splice(groundCells.indexOf(cell), 1);
-      World.remove(engine.world, cell.body);
+      if (cell.body.position.x + cellSize/2 > mouseX && mouseX > cell.body.position.x - cellSize/2 && cell.body.position.y + cellSize/2 > mouseY && mouseY > cell.body.position.y - cellSize/2) {
+        groundCells.splice(groundCells.indexOf(cell), 1);
+        World.remove(engine.world, cell.body);
+      }
     }
   }
 }
@@ -121,21 +118,13 @@ function displayGrid() { // Renders the grid visually
   }
 }
 
-function mousePressed() {
-  // grid[Math.floor(mouseY/globalRows)][Math.floor(mouseX/globalCols)] = 0;
-  // console.log(Math.floor(mouseY/globalRows), Math.floor(mouseX/globalCols));
-  //generateGrid();
-  // WIP 
-  // I NEED IT TO DELETE THE PREVIOUS GRID COLLIDORS THEN MAKE A NEW ONE
-}
-
 function matterEngine() { // Enables physics
   Engine.update(engine);
 }
 
 function water() { // Creates water
   // Water Styling
-  fill("green");
+  fill("magenta");
   noStroke();
 
   if (keyIsPressed && keyCode === 32) { // If spacebar pressed
