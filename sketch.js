@@ -34,6 +34,10 @@ let circles = [];
 let ground;
 let groundCells = [];
 
+let cellDestructionRadius;
+let frameCountOn = false;
+let oldTime = 0;
+
 // class groundPhysics {
 //   constructor(cellSize) {
 //     this.cellSize = cellSize;
@@ -53,6 +57,7 @@ function setup() { // Setup function (Happens once before draw loop)
   rectMode(CENTER);
 
   cellSize = 50;
+  cellDestructionRadius = cellSize/2;
 
   globalCols = ceil(width/cellSize);
   globalRows = ceil(height/cellSize);
@@ -69,15 +74,8 @@ function draw() { // Draw loop (updates every frame)
   matterEngine();
   water();
   displayGrid();
-
-  if (mouseIsPressed && mouseButton === LEFT) { // Deletes cells when mouse pressed
-    for (let cell of groundCells) {
-      if (cell.body.position.x + cellSize/2 > mouseX && mouseX > cell.body.position.x - cellSize/2 && cell.body.position.y + cellSize/2 > mouseY && mouseY > cell.body.position.y - cellSize/2) {
-        groundCells.splice(groundCells.indexOf(cell), 1);
-        World.remove(engine.world, cell.body);
-      }
-    }
-  }
+  terrainDestruction();
+  displayDEBUG();
 }
 
 function generateGridNoise(cols, rows) { // Generates the noise pattern responsible for creating the grid, then creates the grid pattern
@@ -151,4 +149,33 @@ function water() { // Creates water
 
   // Water blur filter
   filter(BLUR, 3); 
+}
+
+function terrainDestruction() {
+  if (mouseIsPressed && mouseButton === LEFT) { // Deletes cells when mouse pressed
+    for (let cell of groundCells) {
+      if (cell.body.position.x + cellDestructionRadius > mouseX && mouseX > cell.body.position.x - cellDestructionRadius && cell.body.position.y + cellDestructionRadius > mouseY && mouseY > cell.body.position.y - cellDestructionRadius) {
+        groundCells.splice(groundCells.indexOf(cell), 1);
+        World.remove(engine.world, cell.body);
+      }
+    }
+  }
+}
+
+function displayDEBUG() { // Toggles debug screen with f12
+  // Text styling
+  fill("magenta");
+  textSize(30);
+  textFont("sans-serif");
+
+  if (millis() - oldTime > 100) { // Add a 0.1s delay
+    oldTime = millis();
+    if (key === ";" && keyIsPressed) { // If key pressed turn on frameCount
+      frameCountOn = !frameCountOn;
+    }
+  }
+  if (frameCountOn) {
+    text("fps: " + Math.round(frameRate()), width - width/10, height/10);
+  }
+  console.log(key);
 }
