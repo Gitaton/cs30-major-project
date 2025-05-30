@@ -38,13 +38,6 @@ let cellDestructionRadius;
 let frameCountOn = false;
 let oldTime = 0;
 
-// class groundPhysics {
-//   constructor(cellSize) {
-//     this.cellSize = cellSize;
-
-//   }
-// }
-
 function setup() { // Setup function (Happens once before draw loop)
   createCanvas(windowWidth, windowHeight, P2D);
   
@@ -63,7 +56,7 @@ function setup() { // Setup function (Happens once before draw loop)
   globalRows = ceil(height/cellSize);
 
   // Set Noise Seed
-  noiseSeed(15);
+  noiseSeed(10);
 
   grid = generateGridNoise(globalCols, globalRows);
   generateGrid();
@@ -127,14 +120,16 @@ function water() { // Creates water
 
   if (keyIsPressed && keyCode === 32) { // If spacebar pressed
     // Create circle object
-    let newCircle = {
-      radius: 5,
-      body: Bodies.circle(mouseX, mouseY, 5)
-    };
-
-    // Add circle to circle array & and to MatterJS world
-    circles.push(newCircle);
-    World.add(engine.world, newCircle.body);
+    for (let i = 0; i < 10; i++) { // Amount of circles added per key press
+      let newCircle = {
+        radius: 5,
+        body: Bodies.circle(mouseX, mouseY, 5)
+      };
+  
+      // Add circle to circle array & and to MatterJS world
+      circles.push(newCircle);
+      World.add(engine.world, newCircle.body);
+    }
   }
 
   // Draw circles
@@ -145,6 +140,12 @@ function water() { // Creates water
     // Draws a circle at the position of the circle collider
     let position = circle.body.position;
     ellipse(position.x, position.y, circle.radius * 4);
+
+    // Delete if offscreen
+    if (position.x < 0 || position.x > windowWidth || position.y < 0 || position.y > windowHeight) {
+      circles.splice(circles.indexOf(circle), 1);
+      World.remove(engine.world, circle.body);
+    }
   }
 
   // Water blur filter
@@ -177,5 +178,4 @@ function displayDEBUG() { // Toggles debug screen with f12
   if (frameCountOn) {
     text("fps: " + Math.round(frameRate()), width - width/10, height/10);
   }
-  console.log(key);
 }
