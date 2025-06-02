@@ -38,6 +38,18 @@ let cellDestructionRadius;
 let frameCountOn = false;
 let oldTime = 0;
 
+class Swampy {
+  constructor() {
+
+  }
+
+  // Make swampy have a spawn location
+
+  // Make him update percent of swamp slime/water
+
+  // Win condition?
+}
+
 function setup() { // Setup function (Happens once before draw loop)
   createCanvas(windowWidth, windowHeight, P2D);
   
@@ -120,7 +132,7 @@ function water() { // Creates water
 
   if (keyIsPressed && keyCode === 32) { // If spacebar pressed
     // Create circle object
-    for (let i = 0; i < 10; i++) { // Amount of circles added per key press
+    for (let i = 0; i < 2; i++) { // Amount of circles added per key press
       let newCircle = {
         radius: 5,
         body: Bodies.circle(mouseX, mouseY, 5)
@@ -157,6 +169,7 @@ function terrainDestruction() {
     for (let cell of groundCells) {
       if (cell.body.position.x + cellDestructionRadius > mouseX && mouseX > cell.body.position.x - cellDestructionRadius && cell.body.position.y + cellDestructionRadius > mouseY && mouseY > cell.body.position.y - cellDestructionRadius) {
         groundCells.splice(groundCells.indexOf(cell), 1);
+        console.log(cell);
         World.remove(engine.world, cell.body);
       }
     }
