@@ -38,12 +38,22 @@ let cellDestructionRadius;
 let frameCountOn = false;
 let oldTime = 0;
 
+let crocodile;
+
 class Swampy {
   constructor() {
-
+    this.spawnLocate = {
+      x: 0,
+      y: 0,
+    };
   }
 
-  // Make swampy have a spawn location
+  spawnLocation() { // Make swampy have a spawn location
+    if (keyIsPressed && keyCode === 71) { // If G pressed
+      this.spawnLocate.x = mouseX;
+      this.spawnLocate.y = mouseY;
+    }
+  }
 
   // Make him update percent of swamp slime/water
 
@@ -72,9 +82,12 @@ function setup() { // Setup function (Happens once before draw loop)
 
   grid = generateGridNoise(globalCols, globalRows);
   generateGrid();
+
+  crocodile = new Swampy();
 }
 
 function draw() { // Draw loop (updates every frame)
+  crocodile.spawnLocation();
   background(220);
   matterEngine();
   water();
