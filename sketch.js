@@ -13,6 +13,7 @@
 // - - https://github.com/n3r4zzurr0/canvas-liquid-effect
 // - FOR FLUID DYNAMICS:
 // - - 
+// BetaTesting.md file
 
 
 // https://www.reddit.com/r/askscience/comments/gfpow/how_accurately_can_we_model_fluid_mechanics/
@@ -43,9 +44,10 @@ let crocodile;
 class Swampy {
   constructor() {
     this.spawnLocate = {
-      x: 0,
-      y: 0,
+      x: -500,
+      y: -500,
     };
+    this.radius = 100;
   }
 
   spawnLocation() { // Make swampy have a spawn location
@@ -53,6 +55,16 @@ class Swampy {
       this.spawnLocate.x = mouseX;
       this.spawnLocate.y = mouseY;
     }
+  }
+
+  display() { // Display swampy
+    noFill();
+    circle(this.spawnLocate.x, this.spawnLocate.y, this.radius * 2);
+    Bodies.circle(this.spawnLocate.x, this.spawnLocate.y, this.radius * 2, { isSensor: true, isStatic: true }); // NOT WORKING YET NOT ADDED TO WORLD AND NOT RENDERING
+  }
+
+  detectWater() {
+    
   }
 
   // Make him update percent of swamp slime/water
@@ -87,13 +99,14 @@ function setup() { // Setup function (Happens once before draw loop)
 }
 
 function draw() { // Draw loop (updates every frame)
-  crocodile.spawnLocation();
   background(220);
   matterEngine();
   water();
   displayGrid();
   terrainDestruction();
   displayDEBUG();
+  crocodile.spawnLocation();
+  crocodile.display();
 }
 
 function generateGridNoise(cols, rows) { // Generates the noise pattern responsible for creating the grid, then creates the grid pattern
