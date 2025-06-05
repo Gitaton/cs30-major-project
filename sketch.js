@@ -48,23 +48,31 @@ class Swampy {
       y: -500,
     };
     this.radius = 100;
+    this.swamper;
+  }
+
+  createSwampy() {
+    this.swamper = Matter.Bodies.circle(this.spawnLocate.x, this.spawnLocate.y, this.radius, { isSensor: true, isStatic: true });
+    Matter.World.add(engine.world, this.swamper);
   }
 
   spawnLocation() { // Make swampy have a spawn location
     if (keyIsPressed && keyCode === 71) { // If G pressed
       this.spawnLocate.x = mouseX;
       this.spawnLocate.y = mouseY;
+      Matter.Body.setPosition(this.swamper, { x: this.spawnLocate.x, y: this.spawnLocate.y});
     }
   }
 
   display() { // Display swampy
     noFill();
-    circle(this.spawnLocate.x, this.spawnLocate.y, this.radius * 2);
-    Bodies.circle(this.spawnLocate.x, this.spawnLocate.y, this.radius * 2, { isSensor: true, isStatic: true }); // NOT WORKING YET NOT ADDED TO WORLD AND NOT RENDERING
+    circle(this.swamper.position.x, this.swamper.position.y, this.radius * 2);  
   }
 
   detectWater() {
-    
+    Matter.Events.on(engine, "collisionActive", function(event)) {
+      // COLLISION STUFF
+    }
   }
 
   // Make him update percent of swamp slime/water
@@ -96,6 +104,7 @@ function setup() { // Setup function (Happens once before draw loop)
   generateGrid();
 
   crocodile = new Swampy();
+  crocodile.createSwampy();
 }
 
 function draw() { // Draw loop (updates every frame)
