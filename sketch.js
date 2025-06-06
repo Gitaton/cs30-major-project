@@ -38,6 +38,7 @@ let groundCells = [];
 let cellDestructionRadius;
 let frameCountOn = false;
 let oldTime = 0;
+let ballCounter = 0;
 
 let crocodile;
 
@@ -69,15 +70,23 @@ class Swampy {
     circle(this.swamper.position.x, this.swamper.position.y, this.radius * 2);  
   }
 
-  detectWater() {
-    Matter.Events.on(engine, "collisionActive", function(event)) {
-      // COLLISION STUFF
+  winCondition(currentLevelWinAmount) { // WIP, it will work when level system is added
+    if (ballCounter > 100) {
+      console.log("YOU WIN!");
     }
   }
 
-  // Make him update percent of swamp slime/water
-
-  // Win condition?
+  detectWater() { // Detects water particles and counts the amount of them within the sensor
+    ballCounter = 0;
+    for (let circle in circles) {
+      if (Matter.Collision.collides(this.swamper, circles[circle].body)) {
+        ballCounter++;
+      }
+    }
+    // Display counter text
+    text(ballCounter, this.swamper.position.x, this.swamper.position.y);
+    this.winCondition();
+  }
 }
 
 function setup() { // Setup function (Happens once before draw loop)
@@ -98,7 +107,7 @@ function setup() { // Setup function (Happens once before draw loop)
   globalRows = ceil(height/cellSize);
 
   // Set Noise Seed
-  noiseSeed(10);
+  noiseSeed(15);
 
   grid = generateGridNoise(globalCols, globalRows);
   generateGrid();
@@ -116,6 +125,7 @@ function draw() { // Draw loop (updates every frame)
   displayDEBUG();
   crocodile.spawnLocation();
   crocodile.display();
+  crocodile.detectWater();
 }
 
 function generateGridNoise(cols, rows) { // Generates the noise pattern responsible for creating the grid, then creates the grid pattern

@@ -6,12 +6,12 @@ The popular mobile game: Where's my water
 
 ## Needs To Have List
 - Main Menu
-- 2D Water/Fluid realtime simulation
+- 2D Water/Fluid realtime simulation ✓
 - Music
 - Sound Effects
 - Game Over, Retry, and Continue Screen
-- Destructable environment
-- Goal
+- Destructable environment 
+- Goal ✓
 
 ## Nice To Have List
 - Unique new game mechanic unrelated to Where's my water
