@@ -10,7 +10,7 @@ The popular mobile game: Where's my water
 - Music
 - Sound Effects
 - Game Over, Retry, and Continue Screen
-- Destructable environment 
+- Destructable environment ✓
 - Goal ✓
 
 ## Nice To Have List

@@ -7,12 +7,8 @@
 
 //TODO
 // - FOR TERRAIN DESTRUCTION:
-// - - Create a grid with a relatively large cell size | DONE
-// - - When the destruction occurs, divide the cells into smaller cells (add resolution) to the now destroyed cells
+// - - LOAD JSON LEVEL FILE 
 // - - MAYBE ALSO ADD MARCHING SQUARES FOR SMOOTH TRANSITIONS
-// - - https://github.com/n3r4zzurr0/canvas-liquid-effect
-// - FOR FLUID DYNAMICS:
-// - - 
 // BetaTesting.md file
 
 
@@ -34,6 +30,7 @@ let world;
 let circles = [];
 let ground;
 let groundCells = [];
+let level = "mainMenu";
 
 let cellDestructionRadius;
 let frameCountOn = false;
@@ -57,17 +54,20 @@ class Swampy {
     Matter.World.add(engine.world, this.swamper);
   }
 
-  spawnLocation() { // Make swampy have a spawn location
-    if (keyIsPressed && keyCode === 71) { // If G pressed
-      this.spawnLocate.x = mouseX;
-      this.spawnLocate.y = mouseY;
-      Matter.Body.setPosition(this.swamper, { x: this.spawnLocate.x, y: this.spawnLocate.y});
-    }
+  spawnLocation(gridX, gridY) { // Make swampy have a spawn location
+    // if (keyIsPressed && keyCode === 71) { // If G pressed
+    //   this.spawnLocate.x = mouseX;
+    //   this.spawnLocate.y = mouseY;
+    //   Matter.Body.setPosition(this.swamper, { x: this.spawnLocate.x, y: this.spawnLocate.y});
+    // }
+    this.spawnLocate.x = gridX * cellSize;
+    this.spawnLocate.y = gridY * cellSize;
+    Matter.Body.setPosition(this.swamper, { x: this.spawnLocate.x, y: this.spawnLocate.y});
   }
 
   display() { // Display swampy
     noFill();
-    circle(this.swamper.position.x, this.swamper.position.y, this.radius * 2);  
+    circle(this.swamper.position.x, this.swamper.position.y, this.radius * 2); 
   }
 
   winCondition(currentLevelWinAmount) { // WIP, it will work when level system is added
@@ -89,6 +89,11 @@ class Swampy {
   }
 }
 
+function preload() {
+  // Load JSON levels
+
+}
+
 function setup() { // Setup function (Happens once before draw loop)
   createCanvas(windowWidth, windowHeight, P2D);
   
@@ -103,15 +108,17 @@ function setup() { // Setup function (Happens once before draw loop)
   cellSize = 50;
   cellDestructionRadius = cellSize/2;
 
-  globalCols = ceil(width/cellSize);
-  globalRows = ceil(height/cellSize);
+  globalCols = ceil(width/cellSize) + 1;
+  globalRows = ceil(height/cellSize) + 1;
 
   // Set Noise Seed
   noiseSeed(15);
 
+  // Generates grid
   grid = generateGridNoise(globalCols, globalRows);
   generateGrid();
 
+  // Creates swampy character
   crocodile = new Swampy();
   crocodile.createSwampy();
 }
@@ -123,17 +130,26 @@ function draw() { // Draw loop (updates every frame)
   displayGrid();
   terrainDestruction();
   displayDEBUG();
-  crocodile.spawnLocation();
   crocodile.display();
   crocodile.detectWater();
 }
 
 function generateGridNoise(cols, rows) { // Generates the noise pattern responsible for creating the grid, then creates the grid pattern
+  // let newGrid = [];
+  // for (let y = 0; y < rows; y++) {
+  //   newGrid.push([]);
+  //   for (let x = 0; x < cols; x++) {
+  //     newGrid[y].push(round(noise(x * 0.2, y * 0.2)));
+  //   }
+  // }
+  // return newGrid;
+
   let newGrid = [];
   for (let y = 0; y < rows; y++) {
     newGrid.push([]);
     for (let x = 0; x < cols; x++) {
-      newGrid[y].push(round(noise(x * 0.2, y * 0.2)));
+      // newGrid[y].push(round(noise(x * 0.2, y * 0.2)));
+      newGrid[y].push(1);
     }
   }
   return newGrid;
@@ -151,6 +167,10 @@ function generateGrid() { // Generates the grid collidors
         };
         groundCells.push(newGround);
         World.add(engine.world, newGround.body);
+      }
+      if (grid[y][x] === "S") {
+        // SET SWAMPY SPAWN LOCATION
+        crocodile.spawnLocation(x, y);
       }
     }
   }
@@ -172,7 +192,7 @@ function matterEngine() { // Enables physics
 
 function water() { // Creates water
   // Water Styling
-  fill("magenta");
+  fill("green");
   noStroke();
 
   if (keyIsPressed && keyCode === 32) { // If spacebar pressed
@@ -213,9 +233,9 @@ function terrainDestruction() {
   if (mouseIsPressed && mouseButton === LEFT) { // Deletes cells when mouse pressed
     for (let cell of groundCells) {
       if (cell.body.position.x + cellDestructionRadius > mouseX && mouseX > cell.body.position.x - cellDestructionRadius && cell.body.position.y + cellDestructionRadius > mouseY && mouseY > cell.body.position.y - cellDestructionRadius) {
-        groundCells.splice(groundCells.indexOf(cell), 1);
-        console.log(cell);
-        World.remove(engine.world, cell.body);
+        grid[round(mouseY/cellSize)][round(mouseX/cellSize)] = 0; // Deletes from grid
+        groundCells.splice(groundCells.indexOf(cell), 1); // Deletes collider from collider grid array
+        World.remove(engine.world, cell.body); // Removes cell from world
       }
     }
   }
