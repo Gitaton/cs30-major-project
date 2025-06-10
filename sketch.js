@@ -40,6 +40,8 @@ let ballCounter = 0;
 
 let crocodile;
 
+let burgerButtonSize;;
+
 class Swampy {
   constructor() {
     this.spawnLocate = {
@@ -97,6 +99,7 @@ function preload() {
   crankyImage = loadImage("cranky.png");
   backgroundTileImage = loadImage("cranky_bricks_green-HD.jpg");
   dirtImage = loadImage("dirt-HD.jpg");
+  hamburgerButtonImage = loadImage("Hamburger-Button.png");
 }
 
 function setup() { // Setup function (Happens once before draw loop)
@@ -128,6 +131,7 @@ function setup() { // Setup function (Happens once before draw loop)
 
   generateGrid();
   imageMode(CENTER);
+  burgerButtonSize = width/15;
 }
 
 function draw() { // Draw loop (updates every frame)
@@ -138,6 +142,7 @@ function draw() { // Draw loop (updates every frame)
   displayGrid();
   terrainDestruction();
   displayDEBUG();
+  gameplayUI();
   crocodile.display();
   crocodile.detectWater();
 }
@@ -205,7 +210,17 @@ function displayGrid() { // Renders the grid visually
     fill("white");
     let secondPosition = cell.body.position;
     rect(secondPosition.x, secondPosition.y, cellSize, cellSize);
-    image(dirtImage, secondPosition.x, secondPosition.y, cellSize, cellSize);
+
+    // Creates a selection box
+    if (cell.body.position.x + cellDestructionRadius > mouseX && mouseX > cell.body.position.x - cellDestructionRadius && cell.body.position.y + cellDestructionRadius > mouseY && mouseY > cell.body.position.y - cellDestructionRadius && mouseIsPressed === false) {
+      push();
+      tint(200);
+      image(dirtImage, secondPosition.x, secondPosition.y, cellSize, cellSize); // If hovered over
+      pop();
+    }
+    else {
+      image(dirtImage, secondPosition.x, secondPosition.y, cellSize, cellSize); // Normal cell
+    }
   }
 }
 
@@ -288,4 +303,15 @@ function displayDEBUG() { // Toggles debug screen with f12
   if (frameCountOn) {
     text("fps: " + Math.round(frameRate()), width - width/10, height/10);
   }
+}
+
+function gameplayUI() {
+  // If mouse hovering
+  if (mouseX > width - width/20 - burgerButtonSize/2 && mouseX < width - width/20 + burgerButtonSize/2 && mouseY > width/20 - burgerButtonSize/2 && mouseY < width/20 + burgerButtonSize/2) {
+    burgerButtonSize = (800 - burgerButtonSize) / 4;
+  } 
+  else {
+    burgerButtonSize = (600 - burgerButtonSize) / 4;
+  }
+  image(hamburgerButtonImage, width - width/20, width/20, burgerButtonSize, burgerButtonSize);
 }
