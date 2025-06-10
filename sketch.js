@@ -31,6 +31,7 @@ let circles = [];
 let ground;
 let groundCells = [];
 let level = "mainMenu";
+const BACKGROUND_TILE_SIZE = 128;
 
 let cellDestructionRadius;
 let frameCountOn = false;
@@ -61,17 +62,18 @@ class Swampy {
     //   Matter.Body.setPosition(this.swamper, { x: this.spawnLocate.x, y: this.spawnLocate.y});
     // }
     this.spawnLocate.x = gridX * cellSize;
-    this.spawnLocate.y = gridY * cellSize;
+    this.spawnLocate.y = (gridY + 0.5) * cellSize;
     Matter.Body.setPosition(this.swamper, { x: this.spawnLocate.x, y: this.spawnLocate.y});
   }
 
   display() { // Display swampy
     noFill();
-    circle(this.swamper.position.x, this.swamper.position.y, this.radius * 2); 
+    circle(this.swamper.position.x, this.swamper.position.y, this.radius * 2);
+    image(crankyImage, this.swamper.position.x + 35, this.swamper.position.y - 35, 300, 300);
   }
 
   winCondition(currentLevelWinAmount) { // WIP, it will work when level system is added
-    if (ballCounter > 100) {
+    if (ballCounter > 220) {
       console.log("YOU WIN!");
     }
   }
@@ -91,7 +93,10 @@ class Swampy {
 
 function preload() {
   // Load JSON levels
-
+  // grid = loadJSON("level-01.json");
+  crankyImage = loadImage("cranky.png");
+  backgroundTileImage = loadImage("cranky_bricks_green-HD.jpg");
+  dirtImage = loadImage("dirt-HD.jpg");
 }
 
 function setup() { // Setup function (Happens once before draw loop)
@@ -105,8 +110,8 @@ function setup() { // Setup function (Happens once before draw loop)
 
   rectMode(CENTER);
 
-  cellSize = 50;
-  cellDestructionRadius = cellSize/2;
+  cellSize = 40;
+  cellDestructionRadius = cellSize;
 
   globalCols = ceil(width/cellSize) + 1;
   globalRows = ceil(height/cellSize) + 1;
@@ -116,15 +121,18 @@ function setup() { // Setup function (Happens once before draw loop)
 
   // Generates grid
   grid = generateGridNoise(globalCols, globalRows);
-  generateGrid();
 
   // Creates swampy character
   crocodile = new Swampy();
   crocodile.createSwampy();
+
+  generateGrid();
+  imageMode(CENTER);
 }
 
 function draw() { // Draw loop (updates every frame)
   background(220);
+  renderBackgroundImages();
   matterEngine();
   water();
   displayGrid();
@@ -144,6 +152,7 @@ function generateGridNoise(cols, rows) { // Generates the noise pattern responsi
   // }
   // return newGrid;
 
+  // Creates blank grid
   let newGrid = [];
   for (let y = 0; y < rows; y++) {
     newGrid.push([]);
@@ -171,6 +180,19 @@ function generateGrid() { // Generates the grid collidors
       if (grid[y][x] === "S") {
         // SET SWAMPY SPAWN LOCATION
         crocodile.spawnLocation(x, y);
+        // console.log("AHH");
+      }
+      if (grid[y][x] === "W") {
+        for (let i = 0; i < 20; i++) { // Amount of circles added per cell
+          let newCircle = {
+            radius: 5,
+            body: Bodies.circle(x * cellSize, y * cellSize, 5)
+          };
+  
+          // Add circle to circle array & and to MatterJS world
+          circles.push(newCircle);
+          World.add(engine.world, newCircle.body);
+        }
       }
     }
   }
@@ -178,11 +200,12 @@ function generateGrid() { // Generates the grid collidors
 
 function displayGrid() { // Renders the grid visually
   // Draw Ground
-  stroke("black");
+  //stroke("black");
   for (let cell of groundCells) {
     fill("white");
     let secondPosition = cell.body.position;
     rect(secondPosition.x, secondPosition.y, cellSize, cellSize);
+    image(dirtImage, secondPosition.x, secondPosition.y, cellSize, cellSize);
   }
 }
 
@@ -192,7 +215,8 @@ function matterEngine() { // Enables physics
 
 function water() { // Creates water
   // Water Styling
-  fill("green");
+  fill(52,251,255, 50);
+  //stroke("dark")
   noStroke();
 
   if (keyIsPressed && keyCode === 32) { // If spacebar pressed
@@ -237,6 +261,14 @@ function terrainDestruction() {
         groundCells.splice(groundCells.indexOf(cell), 1); // Deletes collider from collider grid array
         World.remove(engine.world, cell.body); // Removes cell from world
       }
+    }
+  }
+}
+
+function renderBackgroundImages() {
+  for (let i = 0; i < ceil(height/BACKGROUND_TILE_SIZE) + 1; i++) {
+    for (let j = 0; j < ceil(width/BACKGROUND_TILE_SIZE) + 1; j++) {
+      image(backgroundTileImage, j * BACKGROUND_TILE_SIZE, i * BACKGROUND_TILE_SIZE, BACKGROUND_TILE_SIZE, BACKGROUND_TILE_SIZE);
     }
   }
 }
