@@ -51,6 +51,7 @@ class Swampy {
     };
     this.radius = 100;
     this.swamper;
+    this.winMet = false;
   }
 
   createSwampy() {
@@ -72,12 +73,16 @@ class Swampy {
   display() { // Display swampy
     noFill();
     circle(this.swamper.position.x, this.swamper.position.y, this.radius * 2);
-    image(crankyImage, this.swamper.position.x + 35, this.swamper.position.y - 35, 300, 300);
+    image(crankyImage, this.swamper.position.x + width/38.4, this.swamper.position.y - width/32, width/6.2, width/6.2);
   }
 
   winCondition(currentLevelWinAmount) { // WIP, it will work when level system is added
     if (ballCounter > 220) {
       console.log("YOU WIN!");
+      if (!victorySound.isPlaying() && this.winMet === false) {
+        victorySound.play();
+        this.winMet = true;
+      }
     }
   }
 
@@ -96,7 +101,7 @@ class Swampy {
 
 function preload() {
   // Load JSON levels
-  // grid = loadJSON("level-01.json");
+  grid = loadJSON("level-01.json");
 
   crankyImage = loadImage("assets/cranky.png");
   backgroundTileImage = loadImage("assets/cranky_bricks_green-HD.jpg");
@@ -110,6 +115,7 @@ function preload() {
   gameplayMusic_02 = loadSound("assets/04. Level 2.mp3");
   gameplayMusic_03 = loadSound("assets/05. Level 3.mp3");
   clickSound = loadSound("assets/computer-mouse-click-351398.mp3");
+  victorySound = loadSound("assets/yay-6326.mp3");
 }
 
 function setup() { // Setup function (Happens once before draw loop)
@@ -127,17 +133,17 @@ function setup() { // Setup function (Happens once before draw loop)
   rectMode(CENTER);
   imageMode(CENTER);
 
-  cellSize = 40;
+  cellSize = round(width/450) * 10;
   cellDestructionRadius = cellSize;
 
-  globalCols = ceil(width/cellSize) + 1;
-  globalRows = ceil(height/cellSize) + 1;
+  globalCols = 49;
+  globalRows = 44;
 
   // Set Noise Seed
   noiseSeed(15);
 
   // Generates grid
-  grid = generateFullGrid(globalCols, globalRows);
+  // grid = generateFullGrid(globalCols, globalRows);
 
   // Creates swampy character
   crocodile = new Swampy();
@@ -178,7 +184,6 @@ function generateGridNoise(cols, rows) { // Generates the noise pattern responsi
 }
 
 function generateFullGrid(cols, rows) { // Creates blank grid
-  
   let newGrid = [];
   for (let y = 0; y < rows; y++) {
     newGrid.push([]);
@@ -332,10 +337,10 @@ function displayDEBUG() { // Toggles debug screen with f12
 function gameplayUI() { // Handles UI for gameplay
   // If mouse hovering over burger button
   if (mouseX > width - width/20 - burgerButtonSize/2 && mouseX < width - width/20 + burgerButtonSize/2 && mouseY > width/20 - burgerButtonSize/2 && mouseY < width/20 + burgerButtonSize/2) {
-    burgerButtonSize = (800 - burgerButtonSize) / 4;
+    burgerButtonSize = (width/2.4 - burgerButtonSize) / 4;
   } 
   else {
-    burgerButtonSize = (600 - burgerButtonSize) / 4;
+    burgerButtonSize = (width/3.2 - burgerButtonSize) / 4;
   }
   image(hamburgerButtonImage, width - width/20, width/20, burgerButtonSize, burgerButtonSize);
 
