@@ -12,8 +12,6 @@
 // BetaTesting.md file
 
 
-// https://www.reddit.com/r/askscience/comments/gfpow/how_accurately_can_we_model_fluid_mechanics/
-
 let grid;
 let cellSize;
 
@@ -30,7 +28,6 @@ let world;
 let circles = [];
 let ground;
 let groundCells = [];
-let level = "mainMenu";
 const BACKGROUND_TILE_SIZE = 128;
 
 let cellDestructionRadius;
@@ -40,7 +37,11 @@ let ballCounter = 0;
 
 let crocodile;
 
-let burgerButtonSize;;
+let burgerButtonSize;
+let burgerButtonState = "inactive";
+
+let gameState = "gameplay";
+let level = 1;
 
 class Swampy {
   constructor() {
@@ -96,14 +97,22 @@ class Swampy {
 function preload() {
   // Load JSON levels
   // grid = loadJSON("level-01.json");
-  crankyImage = loadImage("cranky.png");
-  backgroundTileImage = loadImage("cranky_bricks_green-HD.jpg");
-  dirtImage = loadImage("dirt-HD.jpg");
-  hamburgerButtonImage = loadImage("Hamburger-Button.png");
+  crankyImage = loadImage("assets/cranky.png");
+  backgroundTileImage = loadImage("assets/cranky_bricks_green-HD.jpg");
+  dirtImage = loadImage("assets/dirt-HD.jpg");
+  hamburgerButtonImage = loadImage("assets/Hamburger-Button.png");
+  crunchSound = loadSound("assets/dive-into-dirt-45578_Z1wMfjgV.mp3");
+  menuMusic = loadSound("assets/02. Menu.mp3");
+  gameplayMusic_01 = loadSound("assets/03. Level 1.mp3");
+  gameplayMusic_02 = loadSound("assets/04. Level 2.mp3");
+  gameplayMusic_03 = loadSound("assets/05. Level 3.mp3");
 }
 
 function setup() { // Setup function (Happens once before draw loop)
   createCanvas(windowWidth, windowHeight, P2D);
+
+  // Sets output volume of music and sound effects
+  outputVolume(0.3);
   
   // MatterJS
   engine = Engine.create();
@@ -112,6 +121,7 @@ function setup() { // Setup function (Happens once before draw loop)
   //noStroke();
 
   rectMode(CENTER);
+  imageMode(CENTER);
 
   cellSize = 40;
   cellDestructionRadius = cellSize;
@@ -123,19 +133,21 @@ function setup() { // Setup function (Happens once before draw loop)
   noiseSeed(15);
 
   // Generates grid
-  grid = generateGridNoise(globalCols, globalRows);
+  grid = generateFullGrid(globalCols, globalRows);
 
   // Creates swampy character
   crocodile = new Swampy();
   crocodile.createSwampy();
 
   generateGrid();
-  imageMode(CENTER);
+
+  // UI global variables
   burgerButtonSize = width/15;
 }
 
 function draw() { // Draw loop (updates every frame)
   background(220);
+  music();
   renderBackgroundImages();
   matterEngine();
   water();
@@ -148,16 +160,18 @@ function draw() { // Draw loop (updates every frame)
 }
 
 function generateGridNoise(cols, rows) { // Generates the noise pattern responsible for creating the grid, then creates the grid pattern
-  // let newGrid = [];
-  // for (let y = 0; y < rows; y++) {
-  //   newGrid.push([]);
-  //   for (let x = 0; x < cols; x++) {
-  //     newGrid[y].push(round(noise(x * 0.2, y * 0.2)));
-  //   }
-  // }
-  // return newGrid;
+  let newGrid = [];
+  for (let y = 0; y < rows; y++) {
+    newGrid.push([]);
+    for (let x = 0; x < cols; x++) {
+      newGrid[y].push(round(noise(x * 0.2, y * 0.2)));
+    }
+  }
+  return newGrid;
+}
 
-  // Creates blank grid
+function generateFullGrid(cols, rows) { // Creates blank grid
+  
   let newGrid = [];
   for (let y = 0; y < rows; y++) {
     newGrid.push([]);
@@ -169,7 +183,7 @@ function generateGridNoise(cols, rows) { // Generates the noise pattern responsi
   return newGrid;
 }
 
-function generateGrid() { // Generates the grid collidors
+function generateGrid(level) { // Generates the grid collidors
   for (let y = 0; y < globalRows; y++) {
     for (let x = 0; x < globalCols; x++) {
       if (grid[y][x] === 0) {
@@ -275,6 +289,9 @@ function terrainDestruction() {
         grid[round(mouseY/cellSize)][round(mouseX/cellSize)] = 0; // Deletes from grid
         groundCells.splice(groundCells.indexOf(cell), 1); // Deletes collider from collider grid array
         World.remove(engine.world, cell.body); // Removes cell from world
+        if (!crunchSound.isPlaying()) {
+          crunchSound.play();
+        }
       }
     }
   }
@@ -305,8 +322,8 @@ function displayDEBUG() { // Toggles debug screen with f12
   }
 }
 
-function gameplayUI() {
-  // If mouse hovering
+function gameplayUI() { // Handles UI for gameplay
+  // If mouse hovering over burger button
   if (mouseX > width - width/20 - burgerButtonSize/2 && mouseX < width - width/20 + burgerButtonSize/2 && mouseY > width/20 - burgerButtonSize/2 && mouseY < width/20 + burgerButtonSize/2) {
     burgerButtonSize = (800 - burgerButtonSize) / 4;
   } 
@@ -314,4 +331,27 @@ function gameplayUI() {
     burgerButtonSize = (600 - burgerButtonSize) / 4;
   }
   image(hamburgerButtonImage, width - width/20, width/20, burgerButtonSize, burgerButtonSize);
+
+  // Dropdown buttons
+  if (burgerButtonState === "active") {
+
+  }
+}
+
+function mouseClicked() { // Mouse pressed and released | A single click
+  // If button is clicked toggle dropdown menu
+  if (burgerButtonState === "inactive" && mouseX > width - width/20 - burgerButtonSize/2 && mouseX < width - width/20 + burgerButtonSize/2 && mouseY > width/20 - burgerButtonSize/2 && mouseY < width/20 + burgerButtonSize/2) {
+    burgerButtonState = "active";
+  }
+  else if (burgerButtonState === "active" && mouseX > width - width/20 - burgerButtonSize/2 && mouseX < width - width/20 + burgerButtonSize/2 && mouseY > width/20 - burgerButtonSize/2 && mouseY < width/20 + burgerButtonSize/2) {
+    burgerButtonState = "inactive";
+  }
+}
+
+function music() {
+  if (gameState === "gameplay" && level === 1) {
+    if (!gameplayMusic_01.isPlaying()) {
+      gameplayMusic_01.loop();
+    }
+  }
 }
