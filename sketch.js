@@ -40,7 +40,7 @@ let crocodile;
 let burgerButtonSize;
 let burgerButtonState = "inactive";
 
-let gameState = "gameplay";
+let gameState = "mainMenu";
 let level = 1;
 
 class Swampy {
@@ -97,15 +97,19 @@ class Swampy {
 function preload() {
   // Load JSON levels
   // grid = loadJSON("level-01.json");
+
   crankyImage = loadImage("assets/cranky.png");
   backgroundTileImage = loadImage("assets/cranky_bricks_green-HD.jpg");
   dirtImage = loadImage("assets/dirt-HD.jpg");
   hamburgerButtonImage = loadImage("assets/Hamburger-Button.png");
+  menuBackgroundImage = loadImage("assets/intro_pack_01_d-HD.jpg");
+  titleImage = loadImage("assets/wmw_logo-HD.png");
   crunchSound = loadSound("assets/dive-into-dirt-45578_Z1wMfjgV.mp3");
   menuMusic = loadSound("assets/02. Menu.mp3");
   gameplayMusic_01 = loadSound("assets/03. Level 1.mp3");
   gameplayMusic_02 = loadSound("assets/04. Level 2.mp3");
   gameplayMusic_03 = loadSound("assets/05. Level 3.mp3");
+  clickSound = loadSound("assets/computer-mouse-click-351398.mp3");
 }
 
 function setup() { // Setup function (Happens once before draw loop)
@@ -148,15 +152,18 @@ function setup() { // Setup function (Happens once before draw loop)
 function draw() { // Draw loop (updates every frame)
   background(220);
   music();
-  renderBackgroundImages();
-  matterEngine();
-  water();
-  displayGrid();
-  terrainDestruction();
-  displayDEBUG();
-  gameplayUI();
-  crocodile.display();
-  crocodile.detectWater();
+  mainMenu();
+  if (gameState === "gameplay") {
+    renderBackgroundImages();
+    matterEngine();
+    water();
+    displayGrid();
+    terrainDestruction();
+    displayDEBUG();
+    gameplayUI();
+    crocodile.display();
+    crocodile.detectWater();
+  }
 }
 
 function generateGridNoise(cols, rows) { // Generates the noise pattern responsible for creating the grid, then creates the grid pattern
@@ -342,16 +349,54 @@ function mouseClicked() { // Mouse pressed and released | A single click
   // If button is clicked toggle dropdown menu
   if (burgerButtonState === "inactive" && mouseX > width - width/20 - burgerButtonSize/2 && mouseX < width - width/20 + burgerButtonSize/2 && mouseY > width/20 - burgerButtonSize/2 && mouseY < width/20 + burgerButtonSize/2) {
     burgerButtonState = "active";
+    clickSound.play();
   }
   else if (burgerButtonState === "active" && mouseX > width - width/20 - burgerButtonSize/2 && mouseX < width - width/20 + burgerButtonSize/2 && mouseY > width/20 - burgerButtonSize/2 && mouseY < width/20 + burgerButtonSize/2) {
     burgerButtonState = "inactive";
+    clickSound.play();
+  }
+
+  if (gameState === "mainMenu" && mouseX > width/4.8 && mouseX < width/3 && mouseY > height/2.3 && mouseY < height/1.7) {
+    clickSound.play();
+    gameState = "gameplay";
   }
 }
 
 function music() {
+  if (gameState === "gameplay" && menuMusic.isPlaying()) {
+    menuMusic.pause();
+  }
   if (gameState === "gameplay" && level === 1) {
     if (!gameplayMusic_01.isPlaying()) {
       gameplayMusic_01.loop();
     }
   }
+  if (gameState === "mainMenu") {
+    if (!menuMusic.isPlaying()) {
+      menuMusic.loop();
+    }
+    if (gameplayMusic_01.isPlaying) {
+      gameplayMusic_01.pause();
+    }
+  }
+}
+
+function mainMenu() { // Creates and displays the main menu gameState
+  if (gameState === "mainMenu") {
+    // Background Image and Logo Image
+    imageMode(CORNER);
+    image(menuBackgroundImage, 0, 0, width, height);
+    image(titleImage, width/8, height/8, 672, 290);
+    // Buttons
+    if (mouseX > width/4.8 && mouseX < width/3 && mouseY > height/2.3 && mouseY < height/1.7) {
+      fill("orange");
+    }
+    else {
+      fill("white");
+    }
+    textSize(60);
+    textStyle(ITALIC);
+    text("PLAY", width/4.8, height/1.7);
+  }
+  imageMode(CENTER);
 }
