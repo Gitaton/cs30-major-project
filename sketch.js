@@ -145,6 +145,9 @@ function preload() {
   // Load JSON levels
   grid = loadJSON("level-01.json");
 
+  lebronImage = loadImage("assets/Lebron.jpg");
+  lebronMusic = loadSound("assets/you-are-my-sunshine-lebron-james.mp3");
+
   gloveCursorImage = loadImage("assets/GloveCursor.png");
   crankyImage = loadImage("assets/cranky.png");
   backgroundTileImage = loadImage("assets/cranky_bricks_green-HD.jpg");
@@ -205,6 +208,7 @@ function setup() { // Setup function (Happens once before draw loop)
 
 function draw() { // Draw loop (updates every frame)
   background(41, 100, 103);
+  lebronMode();
   music();
   mainMenu();
   if (gameState === "gameplay") {
@@ -490,5 +494,38 @@ function tutorial() {
   if (tutorialState) {
     fill("white");
     image(gloveCursorImage, width/2, height/3 + sin(frameCount * 0.05) * height/8, 50, 50);
+  }
+}
+
+function lebronMode() {
+  if (key === "l" && keyIsPressed) {
+    gloveCursorImage = lebronImage;
+    crankyImage = lebronImage;
+    backgroundTileImage = lebronImage;
+    dirtImage = lebronImage;
+    hamburgerButtonImage = lebronImage;
+    retryHamburgerImage = lebronImage;
+    playButtonImage = lebronImage;
+    playButtonDepressedImage = lebronImage;
+    menuBackgroundImage = lebronImage;
+    winBackgroundImage = lebronImage;
+    homeButtonImage = lebronImage;
+    titleImage = lebronImage;
+    menuMusic = lebronMusic;
+    gameplayMusic_01 = lebronMusic;
+    gameplayMusic_02 = lebronMusic;
+    gameplayMusic_03 = lebronMusic;
+
+    gameplayMusic_01.stop();
+    if (!gameplayMusic_01.isPlaying()) {
+      gameplayMusic_01.loop();
+    }
+  }
+}
+
+function touchStarted() {
+  for (let touch of touches) {
+    mouseX = touch.x;
+    mouseY = touch.y;
   }
 }
