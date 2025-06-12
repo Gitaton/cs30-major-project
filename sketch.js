@@ -147,6 +147,7 @@ function preload() {
 
   lebronImage = loadImage("assets/Lebron.jpg");
   lebronMusic = loadSound("assets/you-are-my-sunshine-lebron-james.mp3");
+  lebronSound = loadSound("assets/lebron.mp3");
 
   gloveCursorImage = loadImage("assets/GloveCursor.png");
   crankyImage = loadImage("assets/cranky.png");
@@ -497,7 +498,7 @@ function tutorial() {
   }
 }
 
-function lebronMode() {
+function lebronMode() { // Press 'l' for Lebron James Mode
   if (key === "l" && keyIsPressed) {
     gloveCursorImage = lebronImage;
     crankyImage = lebronImage;
@@ -511,14 +512,12 @@ function lebronMode() {
     winBackgroundImage = lebronImage;
     homeButtonImage = lebronImage;
     titleImage = lebronImage;
-    menuMusic = lebronMusic;
-    gameplayMusic_01 = lebronMusic;
-    gameplayMusic_02 = lebronMusic;
-    gameplayMusic_03 = lebronMusic;
+    victorySound = lebronSound;
+    clickSound = lebronSound;
 
-    gameplayMusic_01.stop();
-    if (!gameplayMusic_01.isPlaying()) {
-      gameplayMusic_01.loop();
+    menuMusic.stop();
+    if (!lebronMusic.isPlaying()) {
+      lebronMusic.loop();
     }
   }
 }
