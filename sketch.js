@@ -6,6 +6,10 @@
 // - describe what you did to take this project "above and beyond"
 
 //TODO
+// - FIX RELOAD FUNCTION
+// - Water percentage bar
+// - Animations
+// - Levels and level swap system
 // - FOR TERRAIN DESTRUCTION:
 // - - LOAD JSON LEVEL FILE 
 // - - MAYBE ALSO ADD MARCHING SQUARES FOR SMOOTH TRANSITIONS
@@ -38,9 +42,14 @@ let ballCounter = 0;
 let crocodile;
 
 let burgerButtonSize;
+let retryBurgerButtonSize;
+let homeButtonSize;
+let retryButtonSize;
 let burgerButtonState = "inactive";
 
 let gameState = "mainMenu";
+let winScreenState = false;
+let tutorialState = true;
 let level = 1;
 
 class Swampy {
@@ -76,13 +85,46 @@ class Swampy {
     image(crankyImage, this.swamper.position.x + width/38.4, this.swamper.position.y - width/32, width/6.2, width/6.2);
   }
 
+  winScreen() { // Displays win screen
+    if (winScreenState) {
+      // Win Screen background image
+      filter(BLUR, 6);
+      fill(0, 0, 0, 150);
+      rect(width/2, height/2, width, height);
+      image(winBackgroundImage, width/2, height/2, 1686 * 0.5 * width/1920, 1230 * 0.5 * width/1920);
+
+      // - Win Screen Buttons -
+      // Hovering over home button
+      if (dist(width/2.2, height/2, mouseX, mouseY) <= homeButtonSize/2) {
+        homeButtonSize = (width/2.4 - homeButtonSize) / 4;
+      } 
+      else {
+        homeButtonSize = (width/3.2 - homeButtonSize) / 4;
+      }
+      // Hovering over retry button
+      if (dist(width/1.8, height/2, mouseX, mouseY) <= retryButtonSize/2) {
+        retryButtonSize = (width/2.4 - retryButtonSize) / 4;
+      } 
+      else {
+        retryButtonSize = (width/3.2 - retryButtonSize) / 4;
+      }
+      image(homeButtonImage, width/2.2, height/2, homeButtonSize, homeButtonSize);
+      image(retryHamburgerImage, width/1.8, height/2, retryButtonSize, retryButtonSize);
+    }
+  }
+
   winCondition(currentLevelWinAmount) { // WIP, it will work when level system is added
-    if (ballCounter > 220) {
+    if (ballCounter > currentLevelWinAmount) {
+      winScreenState = true;
       console.log("YOU WIN!");
       if (!victorySound.isPlaying() && this.winMet === false) {
         victorySound.play();
         this.winMet = true;
       }
+      this.winScreen();
+    }
+    else {
+      winScreenState = false;
     }
   }
 
@@ -95,7 +137,7 @@ class Swampy {
     }
     // Display counter text
     text(ballCounter, this.swamper.position.x, this.swamper.position.y);
-    this.winCondition();
+    this.winCondition(220);
   }
 }
 
@@ -103,11 +145,17 @@ function preload() {
   // Load JSON levels
   grid = loadJSON("level-01.json");
 
+  gloveCursorImage = loadImage("assets/GloveCursor.png");
   crankyImage = loadImage("assets/cranky.png");
   backgroundTileImage = loadImage("assets/cranky_bricks_green-HD.jpg");
   dirtImage = loadImage("assets/dirt-HD.jpg");
   hamburgerButtonImage = loadImage("assets/Hamburger-Button.png");
+  retryHamburgerImage = loadImage("assets/Retry.png");
+  playButtonImage = loadImage("assets/iap_play.png");
+  playButtonDepressedImage = loadImage("assets/iap_play_depressed.png");
   menuBackgroundImage = loadImage("assets/intro_pack_01_d-HD.jpg");
+  winBackgroundImage = loadImage("assets/winBackground.png");
+  homeButtonImage = loadImage("assets/HomeButton.png");
   titleImage = loadImage("assets/wmw_logo-HD.png");
   crunchSound = loadSound("assets/dive-into-dirt-45578_Z1wMfjgV.mp3");
   menuMusic = loadSound("assets/02. Menu.mp3");
@@ -142,9 +190,6 @@ function setup() { // Setup function (Happens once before draw loop)
   // Set Noise Seed
   noiseSeed(15);
 
-  // Generates grid
-  // grid = generateFullGrid(globalCols, globalRows);
-
   // Creates swampy character
   crocodile = new Swampy();
   crocodile.createSwampy();
@@ -153,10 +198,13 @@ function setup() { // Setup function (Happens once before draw loop)
 
   // UI global variables
   burgerButtonSize = width/15;
+  retryBurgerButtonSize = width/15;
+  homeButtonSize = width/15;
+  retryButtonSize = width/15;
 }
 
 function draw() { // Draw loop (updates every frame)
-  background(220);
+  background(41, 100, 103);
   music();
   mainMenu();
   if (gameState === "gameplay") {
@@ -167,6 +215,7 @@ function draw() { // Draw loop (updates every frame)
     terrainDestruction();
     displayDEBUG();
     gameplayUI();
+    tutorial();
     crocodile.display();
     crocodile.detectWater();
   }
@@ -346,12 +395,23 @@ function gameplayUI() { // Handles UI for gameplay
 
   // Dropdown buttons
   if (burgerButtonState === "active") {
-
+    // If mouse hovering over retry burger button
+    if (mouseX > width - width/20 - retryBurgerButtonSize/2 && mouseX < width - width/20 + retryBurgerButtonSize/2 && mouseY > width/8 - retryBurgerButtonSize/2 && mouseY < width/8 + retryBurgerButtonSize/2) {
+      retryBurgerButtonSize = (width/2.4 - retryBurgerButtonSize) / 4;
+    } 
+    else {
+      retryBurgerButtonSize = (width/3.2 - retryBurgerButtonSize) / 4;
+    }
+    image(retryHamburgerImage, width - width/20, width/8, retryBurgerButtonSize, retryBurgerButtonSize);
   }
 }
 
 function mouseClicked() { // Mouse pressed and released | A single click
   // If button is clicked toggle dropdown menu
+  if (gameState === "gameplay") {
+    tutorialState = false;
+  }
+
   if (burgerButtonState === "inactive" && mouseX > width - width/20 - burgerButtonSize/2 && mouseX < width - width/20 + burgerButtonSize/2 && mouseY > width/20 - burgerButtonSize/2 && mouseY < width/20 + burgerButtonSize/2) {
     burgerButtonState = "active";
     clickSound.play();
@@ -360,10 +420,24 @@ function mouseClicked() { // Mouse pressed and released | A single click
     burgerButtonState = "inactive";
     clickSound.play();
   }
+  else if (burgerButtonState === "active" && mouseX > width - width/20 - retryBurgerButtonSize/2 && mouseX < width - width/20 + retryBurgerButtonSize/2 && mouseY > width/8 - retryBurgerButtonSize/2 && mouseY < width/8 + retryBurgerButtonSize/2) {
+    reload();
+    clickSound.play();
+  }
 
-  if (gameState === "mainMenu" && mouseX > width/4.8 && mouseX < width/3 && mouseY > height/2.3 && mouseY < height/1.7) {
+  if (gameState === "mainMenu" && mouseX > width/4.8 && mouseX < width/3.5 && mouseY > height/1.7 && mouseY < height/1.3) {
     clickSound.play();
     gameState = "gameplay";
+  }
+
+  if (winScreenState === true && dist(width/2.2, height/2, mouseX, mouseY) <= homeButtonSize/2) {
+    // gameState = "mainMenu";
+    clickSound.play();
+    window.location.reload(); // Temporary solution
+  }
+  else if (winScreenState === true && dist(width/1.8, height/2, mouseX, mouseY) <= retryButtonSize/2) {
+    clickSound.play();
+    reload();
   }
 }
 
@@ -390,18 +464,31 @@ function mainMenu() { // Creates and displays the main menu gameState
   if (gameState === "mainMenu") {
     // Background Image and Logo Image
     imageMode(CORNER);
-    image(menuBackgroundImage, 0, 0, width, height);
-    image(titleImage, width/8, height/8, 672, 290);
+    image(menuBackgroundImage, 0, 0, 1534 * width/1534, 1018 * width/1534);
+    image(titleImage, width/8, height/8, 672 * width/1920, 290 * width/1920);
     // Buttons
-    if (mouseX > width/4.8 && mouseX < width/3 && mouseY > height/2.3 && mouseY < height/1.7) {
-      fill("orange");
+    push();
+    if (mouseX > width/4.8 && mouseX < width/3.5 && mouseY > height/1.7 && mouseY < height/1.3) {
+      image(playButtonDepressedImage, width/4.8, height/1.7, 300 * 0.5 * width/1920, 312 * 0.5 * width/1920);
     }
     else {
-      fill("white");
+      image(playButtonImage, width/4.8, height/1.7, 300 * 0.5 * width/1920, 312 * 0.5 * width/1920);
     }
-    textSize(60);
-    textStyle(ITALIC);
-    text("PLAY", width/4.8, height/1.7);
+    pop();
   }
   imageMode(CENTER);
+}
+
+function reload() { // Reloads the level
+  groundCells = [];
+  circles = [];
+  generateGrid();
+  //grid = loadJSON("level-01.json");
+}
+
+function tutorial() {
+  if (tutorialState) {
+    fill("white");
+    image(gloveCursorImage, width/2, height/3 + sin(frameCount * 0.05) * height/8, 50, 50);
+  }
 }

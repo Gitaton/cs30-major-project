@@ -5,11 +5,11 @@ Tell me what you're going to build...
 The popular mobile game: Where's my water 
 
 ## Needs To Have List
-- Main Menu
+- Main Menu ✓
 - 2D Water/Fluid realtime simulation ✓
-- Music
-- Sound Effects
-- Game Over, Retry, and Continue Screen
+- Music ✓
+- Sound Effects ✓
+- Game Over, Retry, and Continue Screen ✓
 - Destructable environment ✓
 - Goal ✓
 
