@@ -93,6 +93,14 @@ class Swampy {
       rect(width/2, height/2, width, height);
       image(winBackgroundImage, width/2, height/2, 1686 * 0.5 * width/1920, 1230 * 0.5 * width/1920);
 
+      // Win screen text
+      fill("white");
+      textFont("comic sans ms");
+      textSize(width/1920 * 40);
+      textAlign(CENTER);
+      textStyle(ITALIC);
+      text("Excellent!", width/2, height/2.7);
+
       // - Win Screen Buttons -
       // Hovering over home button
       if (dist(width/2.2, height/2, mouseX, mouseY) <= homeButtonSize/2) {
@@ -418,11 +426,11 @@ function gameplayUI() { // Handles UI for gameplay
 }
 
 function mouseClicked() { // Mouse pressed and released | A single click
-  // If button is clicked toggle dropdown menu
   if (gameState === "gameplay") {
     tutorialState = false;
   }
 
+  // If button is clicked toggle dropdown menu with a button for reloading the game
   if (burgerButtonState === "inactive" && mouseX > width - width/20 - burgerButtonSize/2 && mouseX < width - width/20 + burgerButtonSize/2 && mouseY > width/20 - burgerButtonSize/2 && mouseY < width/20 + burgerButtonSize/2) {
     burgerButtonState = "active";
     clickSound.play();
@@ -436,15 +444,17 @@ function mouseClicked() { // Mouse pressed and released | A single click
     clickSound.play();
   }
 
+  // If mouse clicks on play button
   if (gameState === "mainMenu" && mouseX > width/4.8 && mouseX < width/3.5 && mouseY > height/1.7 && mouseY < height/1.3) {
     clickSound.play();
     gameState = "gameplay";
   }
 
+  // If win screen home button is pressed
   if (winScreenState === true && dist(width/2.2, height/2, mouseX, mouseY) <= homeButtonSize/2) {
-    // gameState = "mainMenu";
+    reload();
+    gameState = "mainMenu";
     clickSound.play();
-    window.location.reload(); // Temporary solution
   }
   else if (winScreenState === true && dist(width/1.8, height/2, mouseX, mouseY) <= retryButtonSize/2) {
     clickSound.play();
@@ -452,7 +462,7 @@ function mouseClicked() { // Mouse pressed and released | A single click
   }
 }
 
-function music() {
+function music() { // Plays all the music in the game
   if (gameState === "gameplay" && menuMusic.isPlaying()) {
     menuMusic.pause();
   }
@@ -473,11 +483,12 @@ function music() {
 
 function mainMenu() { // Creates and displays the main menu gameState
   if (gameState === "mainMenu") {
-    // Background Image and Logo Image
+    // Background Image and Logo Image with Scaling
     imageMode(CORNER);
     image(menuBackgroundImage, 0, 0, 1534 * width/1534, 1018 * width/1534);
     image(titleImage, width/8, height/8, 672 * width/1920, 290 * width/1920);
-    // Buttons
+
+    // Buttons that check if the mouse is within a certain area
     push();
     if (mouseX > width/4.8 && mouseX < width/3.5 && mouseY > height/1.7 && mouseY < height/1.3) {
       image(playButtonDepressedImage, width/4.8, height/1.7, 300 * 0.5 * width/1920, 312 * 0.5 * width/1920);
@@ -491,26 +502,31 @@ function mainMenu() { // Creates and displays the main menu gameState
 }
 
 function reload() { // Reloads the level
-  for (let cell of groundCells) {
+  crocodile.winMet = false; // Resets the crocodile
+  for (let cell of groundCells) { // Deletes all ground colliders
     World.remove(engine.world, cell.body);
   }
-  for (let circle of circles) {
+  for (let circle of circles) { // Deletes all circle colliders
     World.remove(engine.world, circle.body);
   }
+  
+  // Resets both water and ground arrays
   circles = [];
   groundCells = [];
+
+  // Generates the world/level
   generateGrid();
 }
 
-function tutorial() {
+function tutorial() { // Renders the little hand moving up and down as a quick tutorial
   if (tutorialState) {
     fill("white");
     image(gloveCursorImage, width/2, height/3 + sin(frameCount * 0.05) * height/8, 50, 50);
   }
 }
 
-function lebronMode() { // Press 'l' for Lebron James Mode
-  if (key === "l" && keyIsPressed) {
+function lebronMode() { // Press 'L' for Lebron James Mode
+  if (key === "l" && keyIsPressed) { // Changes most images and sound to Lebron
     gloveCursorImage = lebronImage;
     crankyImage = lebronImage;
     backgroundTileImage = lebronImage;
