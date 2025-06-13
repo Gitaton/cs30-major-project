@@ -249,36 +249,42 @@ function generateFullGrid(cols, rows) { // Creates blank grid
   return newGrid;
 }
 
-function generateGrid(level) { // Generates the grid collidors
+function generateGrid() { // Generates the grid collidors
   for (let y = 0; y < globalRows; y++) {
     for (let x = 0; x < globalCols; x++) {
-      if (grid[y][x] === 0) {
+      try {
+        if (grid[y][x] === 0) {
         // DO NOTHING
-      }
-      if (grid[y][x] === 1) {
-        let newGround = {
-          body: Bodies.rectangle(x * cellSize, y * cellSize, cellSize, cellSize, { isStatic: true })
-        };
-        groundCells.push(newGround);
-        World.add(engine.world, newGround.body);
-      }
-      if (grid[y][x] === "S") {
-        // SET SWAMPY SPAWN LOCATION
-        crocodile.spawnLocation(x, y);
-        // console.log("AHH");
-      }
-      if (grid[y][x] === "W") {
-        for (let i = 0; i < 20; i++) { // Amount of circles added per cell
-          let newCircle = {
-            radius: 5,
-            body: Bodies.circle(x * cellSize, y * cellSize, 5)
+        }
+        if (grid[y][x] === 1) {
+          let newGround = {
+            body: Bodies.rectangle(x * cellSize, y * cellSize, cellSize, cellSize, { isStatic: true })
           };
+          groundCells.push(newGround);
+          World.add(engine.world, newGround.body);
+        }
+        if (grid[y][x] === "S") {
+        // SET SWAMPY SPAWN LOCATION
+          crocodile.spawnLocation(x, y);
+        // console.log("AHH");
+        }
+        if (grid[y][x] === "W") {
+          for (let i = 0; i < 20; i++) { // Amount of circles added per cell
+            let newCircle = {
+              radius: 5,
+              body: Bodies.circle(x * cellSize, y * cellSize, 5)
+            };
   
-          // Add circle to circle array & and to MatterJS world
-          circles.push(newCircle);
-          World.add(engine.world, newCircle.body);
+            // Add circle to circle array & and to MatterJS world
+            circles.push(newCircle);
+            World.add(engine.world, newCircle.body);
+          }
         }
       }
+      catch {
+        continue;
+      }
+      
     }
   }
 }
@@ -313,20 +319,21 @@ function water() { // Creates water
   fill(52,251,255, 50);
   //stroke("dark")
   noStroke();
-
-  if (keyIsPressed && keyCode === 32) { // If spacebar pressed
-    // Create circle object
-    for (let i = 0; i < 2; i++) { // Amount of circles added per key press
-      let newCircle = {
-        radius: 5,
-        body: Bodies.circle(mouseX, mouseY, 5)
-      };
   
-      // Add circle to circle array & and to MatterJS world
-      circles.push(newCircle);
-      World.add(engine.world, newCircle.body);
-    }
-  }
+  // Debug / Sandbox Mode Functionality
+  // if (keyIsPressed && keyCode === 32) { // If spacebar pressed
+  //   // Create circle object
+  //   for (let i = 0; i < 2; i++) { // Amount of circles added per key press
+  //     let newCircle = {
+  //       radius: 5,
+  //       body: Bodies.circle(mouseX, mouseY, 5)
+  //     };
+  
+  //     // Add circle to circle array & and to MatterJS world
+  //     circles.push(newCircle);
+  //     World.add(engine.world, newCircle.body);
+  //   }
+  // }
 
   // Draw circles
   for (let circle of circles) {
@@ -352,7 +359,6 @@ function terrainDestruction() {
   if (mouseIsPressed && mouseButton === LEFT) { // Deletes cells when mouse pressed
     for (let cell of groundCells) {
       if (cell.body.position.x + cellDestructionRadius > mouseX && mouseX > cell.body.position.x - cellDestructionRadius && cell.body.position.y + cellDestructionRadius > mouseY && mouseY > cell.body.position.y - cellDestructionRadius) {
-        grid[round(mouseY/cellSize)][round(mouseX/cellSize)] = 0; // Deletes from grid
         groundCells.splice(groundCells.indexOf(cell), 1); // Deletes collider from collider grid array
         World.remove(engine.world, cell.body); // Removes cell from world
         if (!crunchSound.isPlaying()) {
@@ -485,10 +491,15 @@ function mainMenu() { // Creates and displays the main menu gameState
 }
 
 function reload() { // Reloads the level
-  groundCells = [];
+  for (let cell of groundCells) {
+    World.remove(engine.world, cell.body);
+  }
+  for (let circle of circles) {
+    World.remove(engine.world, circle.body);
+  }
   circles = [];
+  groundCells = [];
   generateGrid();
-  //grid = loadJSON("level-01.json");
 }
 
 function tutorial() {
@@ -522,7 +533,7 @@ function lebronMode() { // Press 'l' for Lebron James Mode
   }
 }
 
-function touchStarted() {
+function touchStarted() { // Mobile Phone Functionality
   for (let touch of touches) {
     mouseX = touch.x;
     mouseY = touch.y;
