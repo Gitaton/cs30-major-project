@@ -655,5 +655,16 @@ function touchStarted() { // Mobile Phone Functionality
       clickSound.play();
       reload();
     }
+
+    // Terrain Destruction Functionalility
+    for (let cell of groundCells) {
+      if (cell.body.position.x + cellDestructionRadius > mouseX && mouseX > cell.body.position.x - cellDestructionRadius && cell.body.position.y + cellDestructionRadius > mouseY && mouseY > cell.body.position.y - cellDestructionRadius) {
+        groundCells.splice(groundCells.indexOf(cell), 1); // Deletes collider from collider grid array
+        World.remove(engine.world, cell.body); // Removes cell from world
+        if (!crunchSound.isPlaying()) {
+          crunchSound.play();
+        }
+      }
+    }
   }
 }
