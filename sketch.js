@@ -71,6 +71,7 @@ class Swampy {
   }
 
   spawnLocation(gridX, gridY) { // Make swampy have a spawn location
+    // - Debug Swampy Spawn - 
     // if (keyIsPressed && keyCode === 71) { // If G pressed
     //   this.spawnLocate.x = mouseX;
     //   this.spawnLocate.y = mouseY;
@@ -84,7 +85,21 @@ class Swampy {
   display() { // Display swampy
     noFill();
     circle(this.swamper.position.x, this.swamper.position.y, this.radius * 2);
-    image(crankyImage, this.swamper.position.x + width/38.4, this.swamper.position.y - width/32, width/6.2, width/6.2);
+    // image(crankyImage, this.swamper.position.x + width/38.4, this.swamper.position.y - width/32, width/6.2, width/6.2);
+    if (winScreenState) {
+      image(happySwampyImage, this.swamper.position.x + width/38.4, this.swamper.position.y - width/32, width/6.2, width/6.2);
+    }
+    else {
+      image(sadSwampyImage, this.swamper.position.x + width/38.4, this.swamper.position.y - width/32, width/6.2, width/6.2);
+    }
+    // Displays water percentage
+    fill("white");
+    textFont("comic sans ms");
+    textSize(width/1920 * 40);
+    textAlign(CENTER);
+    textStyle(ITALIC);
+    image(waterDropImage, width/40, width/40, width/1920 * 1669 * 0.02, width/1920 * 2400 * 0.02);
+    text(round(ballCounter/220 * 100) + "%", width/18, width/30);
   }
 
   winScreen() { // Displays win screen
@@ -145,8 +160,7 @@ class Swampy {
         ballCounter++;
       }
     }
-    // Display counter text
-    text(ballCounter, this.swamper.position.x, this.swamper.position.y);
+    // Check if won
     this.winCondition(220);
   }
 }
@@ -161,6 +175,8 @@ function preload() {
 
   gloveCursorImage = loadImage("assets/GloveCursor.png");
   crankyImage = loadImage("assets/cranky.png");
+  happySwampyImage = loadImage("assets/HappySwampy-ezgif.com-webp-to-png-converter.png");
+  sadSwampyImage = loadImage("assets/SadSwampy-ezgif.com-webp-to-png-converter.png");
   plotImage = loadImage("assets/Plot.jpg");
   backgroundTileImage = loadImage("assets/cranky_bricks_green-HD.jpg");
   dirtImage = loadImage("assets/dirt-HD.jpg");
@@ -172,6 +188,7 @@ function preload() {
   winBackgroundImage = loadImage("assets/winBackground.png");
   homeButtonImage = loadImage("assets/HomeButton.png");
   titleImage = loadImage("assets/wmw_logo-HD.png");
+  waterDropImage = loadImage("assets/WaterDrop.png");
   crunchSound = loadSound("assets/dive-into-dirt-45578_Z1wMfjgV.mp3");
   menuMusic = loadSound("assets/02. Menu.mp3");
   gameplayMusic_01 = loadSound("assets/03. Level 1.mp3");
@@ -550,7 +567,7 @@ function plot() { // Establishes the premise of the game
       textSize(width/1920 * 40);
       textAlign(CENTER);
       textStyle(ITALIC);
-      text("• click to continue •", width - width/8, (height - height/30) + sin(frameCount * 0.05) * 5); // Text moves up and down
+      text("• click to continue •", width - width/8, height - height/30 + sin(frameCount * 0.05) * 5); // Text moves up and down
     }
   }
 }
