@@ -121,7 +121,7 @@ class Swampy {
     }
   }
 
-  winCondition(currentLevelWinAmount) { // WIP, it will work when level system is added
+  winCondition(currentLevelWinAmount) { // Checks if the Crocodile/Alligator has water
     if (ballCounter > currentLevelWinAmount) {
       winScreenState = true;
       console.log("YOU WIN!");
@@ -274,7 +274,6 @@ function generateGrid() { // Generates the grid collidors
         if (grid[y][x] === "S") {
         // SET SWAMPY SPAWN LOCATION
           crocodile.spawnLocation(x, y);
-        // console.log("AHH");
         }
         if (grid[y][x] === "W") {
           for (let i = 0; i < 20; i++) { // Amount of circles added per cell
