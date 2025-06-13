@@ -18,7 +18,7 @@ The popular mobile game: Where's my water
 - More levels
 - Stars/Collectables
 - Animated Characters
-- Small plot or Storyline
+- Small plot or Storyline ✓
 - Pause Menu 
 - A minimum of 3 Unique Levels
 - Images for character and visuals ✓

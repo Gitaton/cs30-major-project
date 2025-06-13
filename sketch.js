@@ -50,6 +50,8 @@ let burgerButtonState = "inactive";
 let gameState = "mainMenu";
 let winScreenState = false;
 let tutorialState = true;
+let plotPlayed = false;
+let plotTime = 0;
 let level = 1;
 
 class Swampy {
@@ -159,6 +161,7 @@ function preload() {
 
   gloveCursorImage = loadImage("assets/GloveCursor.png");
   crankyImage = loadImage("assets/cranky.png");
+  plotImage = loadImage("assets/Plot.jpg");
   backgroundTileImage = loadImage("assets/cranky_bricks_green-HD.jpg");
   dirtImage = loadImage("assets/dirt-HD.jpg");
   hamburgerButtonImage = loadImage("assets/Hamburger-Button.png");
@@ -220,6 +223,7 @@ function draw() { // Draw loop (updates every frame)
   lebronMode();
   music();
   mainMenu();
+  plot();
   if (gameState === "gameplay") {
     renderBackgroundImages();
     matterEngine();
@@ -425,8 +429,13 @@ function gameplayUI() { // Handles UI for gameplay
 }
 
 function mouseClicked() { // Mouse pressed and released | A single click
-  if (gameState === "gameplay") {
+  if (gameState === "gameplay") { // Remove the tutorial hand when player begins playing
     tutorialState = false;
+  }
+
+  if (gameState === "plot") {
+    plotPlayed = true;
+    gameState = "gameplay";
   }
 
   // If button is clicked toggle dropdown menu with a button for reloading the game
@@ -446,7 +455,12 @@ function mouseClicked() { // Mouse pressed and released | A single click
   // If mouse clicks on play button
   if (gameState === "mainMenu" && mouseX > width/4.8 && mouseX < width/3.5 && mouseY > height/1.7 && mouseY < height/1.3) {
     clickSound.play();
-    gameState = "gameplay";
+    if (plotPlayed === false) {
+      gameState = "plot";
+    }
+    else {
+      gameState = "gameplay";
+    }
   }
 
   // If win screen home button is pressed
@@ -521,6 +535,23 @@ function tutorial() { // Renders the little hand moving up and down as a quick t
   if (tutorialState) {
     fill("white");
     image(gloveCursorImage, width/2, height/3 + sin(frameCount * 0.05) * height/8, 50, 50);
+  }
+}
+
+function plot() { // Establishes the premise of the game
+  if (gameState === "plot") {
+    if (plotPlayed === false) {
+      // Image of plot
+      image(plotImage, width/2, height/2, width/1920 * 892 * 1.5, width/1920 * 500 * 1.5);
+
+      // Text
+      fill("white");
+      textFont("comic sans ms");
+      textSize(width/1920 * 40);
+      textAlign(CENTER);
+      textStyle(ITALIC);
+      text("• click to continue •", width - width/8, (height - height/30) + sin(frameCount * 0.05) * 5); // Text moves up and down
+    }
   }
 }
 
