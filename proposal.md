@@ -17,8 +17,8 @@ The popular mobile game: Where's my water
 - Unique new game mechanic unrelated to Where's my water
 - More levels
 - Stars/Collectables
-- Animated Characters
+- Animated Characters ✓ (1/2)
 - Small plot or Storyline ✓
-- Pause Menu 
+- Pause Menu ✓ (Drop down menu/similar)
 - A minimum of 3 Unique Levels
 - Images for character and visuals ✓

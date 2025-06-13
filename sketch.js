@@ -3,17 +3,9 @@
 // 1 May 2025
 //
 // Extra for Experts:
-// - describe what you did to take this project "above and beyond"
-
-//TODO
-// - FIX RELOAD FUNCTION
-// - Water percentage bar
-// - Animations
-// - Levels and level swap system
-// - FOR TERRAIN DESTRUCTION:
-// - - LOAD JSON LEVEL FILE 
-// - - MAYBE ALSO ADD MARCHING SQUARES FOR SMOOTH TRANSITIONS
-// BetaTesting.md file
+// - MatterJS
+// - Filters
+// - 
 
 
 let grid;
@@ -207,8 +199,6 @@ function setup() { // Setup function (Happens once before draw loop)
   // MatterJS
   engine = Engine.create();
   world = engine.world;
-
-  //noStroke();
 
   rectMode(CENTER);
   imageMode(CENTER);
@@ -600,5 +590,50 @@ function touchStarted() { // Mobile Phone Functionality
   for (let touch of touches) {
     mouseX = touch.x;
     mouseY = touch.y;
+    
+    if (gameState === "gameplay") { // Remove the tutorial hand when player begins playing
+      tutorialState = false;
+    }
+
+    if (gameState === "plot") {
+      plotPlayed = true;
+      gameState = "gameplay";
+    }
+
+    // If button is clicked toggle dropdown menu with a button for reloading the game
+    if (burgerButtonState === "inactive" && mouseX > width - width/20 - burgerButtonSize/2 && mouseX < width - width/20 + burgerButtonSize/2 && mouseY > width/20 - burgerButtonSize/2 && mouseY < width/20 + burgerButtonSize/2) {
+      burgerButtonState = "active";
+      clickSound.play();
+    }
+    else if (burgerButtonState === "active" && mouseX > width - width/20 - burgerButtonSize/2 && mouseX < width - width/20 + burgerButtonSize/2 && mouseY > width/20 - burgerButtonSize/2 && mouseY < width/20 + burgerButtonSize/2) {
+      burgerButtonState = "inactive";
+      clickSound.play();
+    }
+    else if (burgerButtonState === "active" && mouseX > width - width/20 - retryBurgerButtonSize/2 && mouseX < width - width/20 + retryBurgerButtonSize/2 && mouseY > width/8 - retryBurgerButtonSize/2 && mouseY < width/8 + retryBurgerButtonSize/2) {
+      reload();
+      clickSound.play();
+    }
+
+    // If mouse clicks on play button
+    if (gameState === "mainMenu" && mouseX > width/4.8 && mouseX < width/3.5 && mouseY > height/1.7 && mouseY < height/1.3) {
+      clickSound.play();
+      if (plotPlayed === false) {
+        gameState = "plot";
+      }
+      else {
+        gameState = "gameplay";
+      }
+    }
+
+    // If win screen home button is pressed
+    if (winScreenState === true && dist(width/2.2, height/2, mouseX, mouseY) <= homeButtonSize/2) {
+      reload();
+      gameState = "mainMenu";
+      clickSound.play();
+    }
+    else if (winScreenState === true && dist(width/1.8, height/2, mouseX, mouseY) <= retryButtonSize/2) {
+      clickSound.play();
+      reload();
+    }
   }
 }
