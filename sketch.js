@@ -5,12 +5,11 @@
 // Extra for Experts:
 // - MatterJS
 // - Filters
-// - 
+// - Touch Screen / Mobile Phone Support
 
-
+// Grid initalization variables
 let grid;
 let cellSize;
-
 let globalCols;
 let globalRows;
 
@@ -19,6 +18,7 @@ let Engine = Matter.Engine;
 let World = Matter.World;
 let Bodies = Matter.Bodies;
 
+// MatterJS initalization
 let engine;
 let world;
 let circles = [];
@@ -26,19 +26,23 @@ let ground;
 let groundCells = [];
 const BACKGROUND_TILE_SIZE = 128;
 
+// Miscellaneous Global Variables
 let cellDestructionRadius;
 let frameCountOn = false;
 let oldTime = 0;
 let ballCounter = 0;
 
+// Swampy Object
 let crocodile;
 
+// UI Variables
 let burgerButtonSize;
 let retryBurgerButtonSize;
 let homeButtonSize;
 let retryButtonSize;
 let burgerButtonState = "inactive";
 
+// Game State Variables
 let gameState = "mainMenu";
 let winScreenState = false;
 let tutorialState = true;
@@ -46,6 +50,7 @@ let plotPlayed = false;
 let plotTime = 0;
 let level = 1;
 
+// Creates Swampy Character Class
 class Swampy {
   constructor() {
     this.spawnLocate = {
@@ -161,10 +166,12 @@ function preload() {
   // Load JSON levels
   grid = loadJSON("level-01.json");
 
+  // Load Lebron Images
   lebronImage = loadImage("assets/Lebron.jpg");
   lebronMusic = loadSound("assets/you-are-my-sunshine-lebron-james.mp3");
   lebronSound = loadSound("assets/lebron.mp3");
 
+  // Load All Other Images
   gloveCursorImage = loadImage("assets/GloveCursor.png");
   crankyImage = loadImage("assets/cranky.png");
   happySwampyImage = loadImage("assets/HappySwampy-ezgif.com-webp-to-png-converter.png");
@@ -181,6 +188,8 @@ function preload() {
   homeButtonImage = loadImage("assets/HomeButton.png");
   titleImage = loadImage("assets/wmw_logo-HD.png");
   waterDropImage = loadImage("assets/WaterDrop.png");
+
+  // Load All Music and Sound
   crunchSound = loadSound("assets/dive-into-dirt-45578_Z1wMfjgV.mp3");
   menuMusic = loadSound("assets/02. Menu.mp3");
   gameplayMusic_01 = loadSound("assets/03. Level 1.mp3");
@@ -200,12 +209,15 @@ function setup() { // Setup function (Happens once before draw loop)
   engine = Engine.create();
   world = engine.world;
 
+  // Sets the orgin to center for rectangles and images
   rectMode(CENTER);
   imageMode(CENTER);
 
+  // Intializes Cell Size and Cell Destruction Radius
   cellSize = round(width/450) * 10;
   cellDestructionRadius = cellSize;
 
+  // Sets the # of Columns and Rows for each loaded level
   globalCols = 49;
   globalRows = 44;
 
@@ -216,6 +228,7 @@ function setup() { // Setup function (Happens once before draw loop)
   crocodile = new Swampy();
   crocodile.createSwampy();
 
+  // Loads all elements of the grid into fruition
   generateGrid();
 
   // UI global variables
@@ -256,19 +269,18 @@ function generateGridNoise(cols, rows) { // Generates the noise pattern responsi
   return newGrid;
 }
 
-function generateFullGrid(cols, rows) { // Creates blank grid
+function generateFullGrid(cols, rows) { // Creates blank grid for creating levels
   let newGrid = [];
   for (let y = 0; y < rows; y++) {
     newGrid.push([]);
     for (let x = 0; x < cols; x++) {
-      // newGrid[y].push(round(noise(x * 0.2, y * 0.2)));
       newGrid[y].push(1);
     }
   }
   return newGrid;
 }
 
-function generateGrid() { // Generates the grid collidors
+function generateGrid() { // Generates the grid collidors, water, and spawns swampy based on grid grid array values
   for (let y = 0; y < globalRows; y++) {
     for (let x = 0; x < globalCols; x++) {
       try {
@@ -276,6 +288,7 @@ function generateGrid() { // Generates the grid collidors
         // DO NOTHING
         }
         if (grid[y][x] === 1) {
+          // Create ground cell
           let newGround = {
             body: Bodies.rectangle(x * cellSize, y * cellSize, cellSize, cellSize, { isStatic: true })
           };
@@ -287,6 +300,7 @@ function generateGrid() { // Generates the grid collidors
           crocodile.spawnLocation(x, y);
         }
         if (grid[y][x] === "W") {
+          // Create water
           for (let i = 0; i < 20; i++) { // Amount of circles added per cell
             let newCircle = {
               radius: 5,
@@ -309,8 +323,8 @@ function generateGrid() { // Generates the grid collidors
 
 function displayGrid() { // Renders the grid visually
   // Draw Ground
-  //stroke("black");
   for (let cell of groundCells) {
+    // Draws each cell incase textures don't render
     fill("white");
     let secondPosition = cell.body.position;
     rect(secondPosition.x, secondPosition.y, cellSize, cellSize);
@@ -335,7 +349,6 @@ function matterEngine() { // Enables physics
 function water() { // Creates water
   // Water Styling
   fill(52,251,255, 50);
-  //stroke("dark")
   noStroke();
   
   // Debug / Sandbox Mode Functionality
@@ -373,7 +386,7 @@ function water() { // Creates water
   filter(BLUR, 3); 
 }
 
-function terrainDestruction() {
+function terrainDestruction() { // Removes ground cells when mouse clicks on them
   if (mouseIsPressed && mouseButton === LEFT) { // Deletes cells when mouse pressed
     for (let cell of groundCells) {
       if (cell.body.position.x + cellDestructionRadius > mouseX && mouseX > cell.body.position.x - cellDestructionRadius && cell.body.position.y + cellDestructionRadius > mouseY && mouseY > cell.body.position.y - cellDestructionRadius) {
@@ -387,7 +400,7 @@ function terrainDestruction() {
   }
 }
 
-function renderBackgroundImages() {
+function renderBackgroundImages() { // Renders the background during gameplay
   for (let i = 0; i < ceil(height/BACKGROUND_TILE_SIZE) + 1; i++) {
     for (let j = 0; j < ceil(width/BACKGROUND_TILE_SIZE) + 1; j++) {
       image(backgroundTileImage, j * BACKGROUND_TILE_SIZE, i * BACKGROUND_TILE_SIZE, BACKGROUND_TILE_SIZE, BACKGROUND_TILE_SIZE);
@@ -395,12 +408,13 @@ function renderBackgroundImages() {
   }
 }
 
-function displayDEBUG() { // Toggles debug screen with f12
+function displayDEBUG() { // Toggles debug screen with ';'
   // Text styling
   fill("magenta");
   textSize(30);
   textFont("sans-serif");
 
+  // Adds a delay it does not flicker
   if (millis() - oldTime > 100) { // Add a 0.1s delay
     oldTime = millis();
     if (key === ";" && keyIsPressed) { // If key pressed turn on frameCount
@@ -408,6 +422,7 @@ function displayDEBUG() { // Toggles debug screen with f12
     }
   }
   if (frameCountOn) {
+    // Display FPS
     text("fps: " + Math.round(frameRate()), width - width/10, height/10);
   }
 }
@@ -436,10 +451,12 @@ function gameplayUI() { // Handles UI for gameplay
 }
 
 function mouseClicked() { // Mouse pressed and released | A single click
-  if (gameState === "gameplay") { // Remove the tutorial hand when player begins playing
+  // Remove the tutorial hand when player begins playing
+  if (gameState === "gameplay") { 
     tutorialState = false;
   }
 
+  // If plot is read and clicked on, switch to gameplay
   if (gameState === "plot") {
     plotPlayed = true;
     gameState = "gameplay";
@@ -545,7 +562,7 @@ function tutorial() { // Renders the little hand moving up and down as a quick t
   }
 }
 
-function plot() { // Establishes the premise of the game
+function plot() { // Establishes the premise of the game by rendering an image and text
   if (gameState === "plot") {
     if (plotPlayed === false) {
       // Image of plot
@@ -563,7 +580,8 @@ function plot() { // Establishes the premise of the game
 }
 
 function lebronMode() { // Press 'L' for Lebron James Mode
-  if (key === "l" && keyIsPressed) { // Changes most images and sound to Lebron
+  // Changes most images and sound to Lebron
+  if (key === "l" && keyIsPressed) { 
     gloveCursorImage = lebronImage;
     crankyImage = lebronImage;
     backgroundTileImage = lebronImage;
@@ -587,7 +605,9 @@ function lebronMode() { // Press 'L' for Lebron James Mode
 }
 
 function touchStarted() { // Mobile Phone Functionality
+  // For every touch
   for (let touch of touches) {
+    // Set mouse position to touch position to simulate a touch as a mouse button press
     mouseX = touch.x;
     mouseY = touch.y;
     
